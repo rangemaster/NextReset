@@ -1,6 +1,7 @@
 ﻿using Main.Screens;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,7 +47,10 @@ namespace Main
 
         #region Buttons
         private void StartPage(object sender, RoutedEventArgs e)
-        { }
+        {
+            Debug.WriteLine("Navigate to start page");
+            this._NavigationFrame.Navigate(new Uri("StartWindow.xaml", UriKind.RelativeOrAbsolute));
+        }
         private void SettingsPage(object sender, RoutedEventArgs e)
         { }
         private void HelpPage(object sender, RoutedEventArgs e)
