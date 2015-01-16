@@ -1,0 +1,23 @@
+﻿<Window x:Class="Main.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="NextReset"
+        Background="Black">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <StackPanel x:Name="_Button_Stackpanel" HorizontalAlignment="Center" VerticalAlignment="Center">
+
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Row="1">
+            <TextBlock x:Name="_About_tx" Text="[text]" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" Foreground="Aqua"/>
+        </Grid>
+        <DockPanel>
+            <Frame x:Name="_NavigationFrame"/>
+        </DockPanel>
+    </Grid>
+</Window>

@@ -1,0 +1,23 @@
+﻿<Window x:Class="Main.Screens.StartPage"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="StartPage"
+        Background="Black">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <TextBlock x:Name="_Title_tx" Text="Selection" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20"/>
+        </Grid>
+        <Grid Grid.Row="1">
+            <StackPanel x:Name="_Buttons_Stackpanel" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Button x:Name="_Level1_bn" Content="Level 1"/>
+            </StackPanel>
+        </Grid>
+        <DockPanel>
+            <Frame x:Name="_NavigationFrame"/>
+        </DockPanel>
+    </Grid>
+</Window>
