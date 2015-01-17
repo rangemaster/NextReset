@@ -1,0 +1,41 @@
+﻿<Page x:Class="Main.Screens.Game.SingleGamePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      mc:Ignorable="d" 
+      d:DesignHeight="400" d:DesignWidth="400"
+	Title="SingleGamePage">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <ScrollViewer>
+                <StackPanel x:Name="_AvailableCommandos_panel" Orientation="Horizontal">
+
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="100"/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="1">
+                <StackPanel Height="300">
+                    <ScrollViewer  Height="230" VerticalScrollBarVisibility="Auto">
+                        <StackPanel x:Name="_Commando_List" Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Left">
+
+                        </StackPanel>
+                    </ScrollViewer>
+                    <Button x:Name="_Start_Program_bn" Content="Start" Click="Start_bn" VerticalAlignment="Bottom"/>
+                    <Button x:Name="_Stop_Program_bn" Content="Stop" Click="Stop_bn" VerticalAlignment="Bottom"/>
+                    <Button x:Name="_Clear_Program_bn" Content="Clear" Click="Clear_bn" VerticalAlignment="Bottom"/>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Grid>
+</Page>
