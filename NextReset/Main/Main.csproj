@@ -53,19 +53,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Screens\AboutPage.xaml.cs">
+    <Compile Include="Screen\AboutPage.xaml.cs">
       <DependentUpon>AboutPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Screens\Game\SingleGamePage.xaml.cs">
+    <Compile Include="Screen\Game\SingleGamePage.xaml.cs">
       <DependentUpon>SingleGamePage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Screens\HelpPage.xaml.cs">
+    <Compile Include="Screen\HelpPage.xaml.cs">
       <DependentUpon>HelpPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Screens\SettingsPage.xaml.cs">
+    <Compile Include="Screen\SettingsPage.xaml.cs">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Screens\StartPage.xaml.cs">
+    <Compile Include="Screen\StartPage.xaml.cs">
       <DependentUpon>StartPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="StartWindow.xaml.cs">
@@ -84,23 +84,23 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Screens\AboutPage.xaml">
+    <Page Include="Screen\AboutPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Screens\Game\SingleGamePage.xaml">
+    <Page Include="Screen\Game\SingleGamePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Screens\HelpPage.xaml">
+    <Page Include="Screen\HelpPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Screens\SettingsPage.xaml">
+    <Page Include="Screen\SettingsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Screens\StartPage.xaml">
+    <Page Include="Screen\StartPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -145,6 +145,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\bg_StartPage.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\bg_StartPage.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

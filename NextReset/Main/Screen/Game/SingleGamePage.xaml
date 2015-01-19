@@ -4,8 +4,9 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       mc:Ignorable="d" 
-      d:DesignHeight="400" d:DesignWidth="400"
-	Title="SingleGamePage">
+      Width="900" Height="700"
+	Title="SingleGamePage"
+      Background="Black">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -13,7 +14,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
-            <ScrollViewer>
+            <ScrollViewer HorizontalScrollBarVisibility="Auto">
                 <StackPanel x:Name="_AvailableCommandos_panel" Orientation="Horizontal">
 
                 </StackPanel>
@@ -24,16 +25,21 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="100"/>
             </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <StackPanel x:Name="_Field_Panel" Orientation="Vertical">
+
+                </StackPanel>
+            </Grid>
             <Grid Grid.Column="1">
-                <StackPanel Height="300">
-                    <ScrollViewer  Height="230" VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <ScrollViewer Height="540" VerticalScrollBarVisibility="Auto">
                         <StackPanel x:Name="_Commando_List" Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Left">
 
                         </StackPanel>
                     </ScrollViewer>
                     <Button x:Name="_Start_Program_bn" Content="Start" Click="Start_bn" VerticalAlignment="Bottom"/>
                     <Button x:Name="_Stop_Program_bn" Content="Stop" Click="Stop_bn" VerticalAlignment="Bottom"/>
-                    <Button x:Name="_Clear_Program_bn" Content="Clear" Click="Clear_bn" VerticalAlignment="Bottom"/>
+                    <Button x:Name="_Clear_Program_bn" Content="!Reset!" Click="Clear_bn" VerticalAlignment="Bottom"/>
                 </StackPanel>
             </Grid>
         </Grid>

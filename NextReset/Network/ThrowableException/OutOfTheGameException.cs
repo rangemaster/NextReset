@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Network.Exceptions
+namespace Network.ThrowableException
 {
     public class OutOfTheGameException : Exception
     {

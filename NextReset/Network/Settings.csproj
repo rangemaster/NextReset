@@ -47,8 +47,14 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Commando\DelegateCommand.cs" />
-    <Compile Include="Exceptions\OutOfTheGameException.cs" />
+    <Compile Include="AppSettings.cs" />
+    <Compile Include="Container\DelegateCommand.cs" />
+    <Compile Include="Levels\Level2.cs" />
+    <Compile Include="Levels\Level3.cs" />
+    <Compile Include="ThrowableException\LevelNotFoundException.cs" />
+    <Compile Include="ThrowableException\OutOfTheGameException.cs" />
+    <Compile Include="Levels\ILevel.cs" />
+    <Compile Include="Levels\Level1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -62,6 +68,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Singleton\SingleGameData.cs" />
+    <Compile Include="ThrowableException\ReachedFinnishException.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

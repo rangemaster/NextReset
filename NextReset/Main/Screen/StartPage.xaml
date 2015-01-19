@@ -13,11 +13,13 @@
             <TextBlock x:Name="_Title_tx" Text="Selection" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20"/>
         </Grid>
         <Grid Grid.Row="1">
-            <StackPanel Orientation="Horizontal" x:Name="_Buttons_Stackpanel" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" x:Name="_Buttons_Stackpanel" HorizontalAlignment="Center" VerticalAlignment="Center">
+                </StackPanel>
+                <StackPanel Height="30">
+                    <TextBlock x:Name="_Feedback_tx" FontSize="20" Foreground="Purple" HorizontalAlignment="Center"/>
+                </StackPanel>
             </StackPanel>
         </Grid>
-        <DockPanel>
-            <Frame x:Name="_NavigationFrame"/>
-        </DockPanel>
     </Grid>
 </Page>
