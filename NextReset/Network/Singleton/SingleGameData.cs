@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Network.Singleton
 {
@@ -10,8 +11,9 @@ namespace Network.Singleton
     {
         private static SingleGameData _Instance = null;
         private bool _UpToDate = false;
-        private bool[] _AvailableMethods;
+        private int[] _AvailableMethods;
         private int[][] _Landscape;
+        private String _Name;
         private SingleGameData() { }
         public static SingleGameData Get
         {
@@ -22,7 +24,7 @@ namespace Network.Singleton
                 return _Instance;
             }
         }
-        public void SetAvailableMethods(bool[] availablemethods)
+        public void SetAvailableMethods(int[] availablemethods)
         {
             if (availablemethods == null)
                 throw new ArgumentNullException("The array of available methods is NULL");
@@ -38,6 +40,12 @@ namespace Network.Singleton
                 throw new FormatException("The array of tiles for the landscape is lower then 9. This is to low for a usefull landscape");
             this._Landscape = tiles;
         }
+        public void SetLevelName(string name)
+        {
+            if (name == null || name == "")
+                throw new ArgumentNullException("The name of the level is unknown");
+            this._Name = name;
+        }
         private int Count(int[][] tiles)
         {
             int amount = 0;
@@ -46,7 +54,8 @@ namespace Network.Singleton
                     amount++;
             return amount;
         }
-        public bool[] GetAvailableMethods { get { return _AvailableMethods; } }
+        public int[] GetAvailableMethods { get { return _AvailableMethods; } }
         public int[][] GetLandscape { get { return _Landscape; } }
+        public String GetLevelName { get { return _Name; } }
     }
 }

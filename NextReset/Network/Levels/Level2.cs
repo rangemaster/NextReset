@@ -10,16 +10,14 @@ namespace Network.Levels
     {
         internal override int[][] SetLandscape()
         {
-            int[] row1 = landscape_row_help(0, 0, 0, 0);
-            int[] row2 = landscape_row_help(1, 1, 1, 0);
-            int[] row3 = landscape_row_help(1, 0, 0, 0);
-            int[] row4 = landscape_row_help(0, 0, 1, 1);
+            int[] row1 = landscape_row_help(01, 01, 01, 01, 01);
+            int[] row2 = landscape_row_help(01, 98, 00, 01, 01);
+            int[] row3 = landscape_row_help(01, 01, 00, 99, 01);
+            int[] row4 = landscape_row_help(01, 01, 01, 01, 01);
             return landscape_help(row1, row2, row3, row4);
         }
-        //internal override bool[] SetAvailableMethods()
-        //{ return method_help(true, false, false, true); }
-        internal override bool[] SetAvailableMethods()
-        { return method_help_below20(); }
+        internal override int[] SetAvailableMethods()
+        { return new AvailableMethodBuilder().Right(2).Down(1).Build(); }
         internal override string SetNameOfClass()
         { return "Level 2"; }
     }

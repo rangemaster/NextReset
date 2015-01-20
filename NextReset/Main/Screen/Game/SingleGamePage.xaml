@@ -32,14 +32,15 @@
             </Grid>
             <Grid Grid.Column="1">
                 <StackPanel>
-                    <ScrollViewer Height="540" VerticalScrollBarVisibility="Auto">
+                    <ScrollViewer Height="340" VerticalScrollBarVisibility="Auto">
                         <StackPanel x:Name="_Commando_List" Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Left">
 
                         </StackPanel>
                     </ScrollViewer>
                     <Button x:Name="_Start_Program_bn" Content="Start" Click="Start_bn" VerticalAlignment="Bottom"/>
                     <Button x:Name="_Stop_Program_bn" Content="Stop" Click="Stop_bn" VerticalAlignment="Bottom"/>
-                    <Button x:Name="_Clear_Program_bn" Content="!Reset!" Click="Clear_bn" VerticalAlignment="Bottom"/>
+                    <Button x:Name="_Clear_Program_bn" Content="Clear" Click="Clear_bn" VerticalAlignment="Bottom"/>
+                    <Button x:Name="_Reset_Program_bn" Content="Reset" Click="Reset_bn" VerticalAlignment="Bottom"/>
                 </StackPanel>
             </Grid>
         </Grid>

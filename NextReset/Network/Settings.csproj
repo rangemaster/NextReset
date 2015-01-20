@@ -51,7 +51,11 @@
     <Compile Include="Container\DelegateCommand.cs" />
     <Compile Include="Levels\Level2.cs" />
     <Compile Include="Levels\Level3.cs" />
+    <Compile Include="Levels\Level4.cs" />
+    <Compile Include="Levels\Level5.cs" />
     <Compile Include="ThrowableException\LevelNotFoundException.cs" />
+    <Compile Include="ThrowableException\LevelUnstartubleException.cs" />
+    <Compile Include="ThrowableException\LocationUnknownException.cs" />
     <Compile Include="ThrowableException\OutOfTheGameException.cs" />
     <Compile Include="Levels\ILevel.cs" />
     <Compile Include="Levels\Level1.cs" />

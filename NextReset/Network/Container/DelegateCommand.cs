@@ -11,9 +11,9 @@ namespace Network.Commando
     public class AvailableCommand
     {
         private readonly Action<object, RoutedEventArgs> _execute = null;
-        private bool _available = false;
-        public AvailableCommand(Action<object, RoutedEventArgs> execute) : this(execute, false) { }
-        public AvailableCommand(Action<object, RoutedEventArgs> execute, bool available)
+        private int _available = 0;
+        public AvailableCommand(Action<object, RoutedEventArgs> execute) : this(execute, 0) { }
+        public AvailableCommand(Action<object, RoutedEventArgs> execute, int available)
         {
             _execute = execute;
             _available = available;
@@ -24,9 +24,15 @@ namespace Network.Commando
         {
             _execute(parameter, e);
         }
-        public void SetAvailable(bool result)
+        public void SetAvailable(int result)
         { this._available = result; }
+        public int GetAvailable { get { return _available; } }
         public bool IsAvailable
-        { get { return _available; } }
+        { get { return _available > 0; } }
+        public bool Decrees()
+        {
+            _available--;
+            return _available >= 0;
+        }
     }
 }

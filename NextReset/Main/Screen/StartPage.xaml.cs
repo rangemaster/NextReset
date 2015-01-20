@@ -1,6 +1,7 @@
 ﻿using Main.Screens.Game;
 using Network.Levels;
 using Network.Singleton;
+using Network.ThrowableException;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -70,16 +71,20 @@ namespace Main.Screens
         }
         private void GoToSingleGame(int level)
         {
-            if (SetGameData(level))
+            if (!SetCorrectGameData(level))
             {
                 this._Feedback_tx.Text = "Could not load level!";
                 _clearTimer.Start();
                 return;
             }
-            SingleGamePage page = new SingleGamePage();
-            this.NavigationService.Navigate(page);
+            try
+            {
+                SingleGamePage page = new SingleGamePage();
+                this.NavigationService.Navigate(page);
+            }
+            catch (LevelUnstartubleException) { this._Feedback_tx.Text = "Could not load level!"; }
         }
-        private bool SetGameData(int level)
+        private bool SetCorrectGameData(int level)
         {
             Debug.WriteLine("Settings GameData: Level " + level);
             SingleGameData data = SingleGameData.Get;
@@ -88,9 +93,11 @@ namespace Main.Screens
             {
                 data.SetLandscape(ilevel.Landscape);
                 data.SetAvailableMethods(ilevel.Methods);
+                data.SetLevelName(ilevel.Name);
             }
-            catch (NullReferenceException) { return true; }
-            return false;
+            catch (NullReferenceException) { return false; }
+            catch (ArgumentNullException) { return false; }
+            return true;
         }
         private ILevel GetLevel(int level)
         {
@@ -98,6 +105,9 @@ namespace Main.Screens
             {
                 case 1: return new Level1();
                 case 2: return new Level2();
+                case 3: return new Level3();
+                case 4: return new Level4();
+                case 5: return new Level5();
             }
             return null;
         }
