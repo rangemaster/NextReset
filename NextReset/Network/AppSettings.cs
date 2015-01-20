@@ -29,5 +29,13 @@ namespace Network
             public const int _You = 98;
             public const int _Finnish = 99;
         }
+        public sealed class Directons
+        {
+            public const string _Right = "Right";
+            public const string _Left = "Left";
+            public const string _Up = "Up";
+            public const string _Down = "Down";
+            public const string[] _All = new string[] { _Right, _Left, _Up, _Down };
+        }
     }
 }

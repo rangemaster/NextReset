@@ -451,17 +451,17 @@ namespace Main.Screens.Game
                 while (!found)
                 {
                     previousDirection = GetPreviousCommand(_commandoInteger - stepsback);
-                    if (EqualsCommand(previousDirection, "Right", "Left", "Up", "Down")) // TODO: Magic cookie
+                    if (EqualsCommand(previousDirection, AppSettings.Directons._All))
                         found = true;
                     stepsback++;
                 }
-                if (previousDirection.Equals("Right")) // TODO: Magic cookie
+                if (previousDirection.Equals(AppSettings.Directons._Right))
                 { BombExplosion(x + 1, y + 0); }
-                else if (previousDirection.Equals("Left")) // TODO: Magic cookie
+                else if (previousDirection.Equals(AppSettings.Directons._Left))
                 { BombExplosion(x - 1, y + 0); }
-                else if (previousDirection.Equals("Up")) // TODO: Magic cookie
+                else if (previousDirection.Equals(AppSettings.Directons._Up))
                 { BombExplosion(x + 0, y - 1); }
-                else if (previousDirection.Equals("Down")) // TODO: Magic cookie
+                else if (previousDirection.Equals(AppSettings.Directons._Down))
                 { BombExplosion(x + 0, y + 1); }
             }
         }
@@ -490,7 +490,6 @@ namespace Main.Screens.Game
         }
         #endregion
 
-
         #region Path Is Clear
         private bool IsNextStepClear(int nextX, int nextY)
         {
@@ -505,6 +504,17 @@ namespace Main.Screens.Game
         }
         #endregion
 
+        #region Attackable
+        private bool IsAttackable(int x, int y)
+        {
+            switch (_landscape[y][x])
+            {
+                case AppSettings.Field._Enemy1: return true;
+            }
+            return false;
+        }
+        #endregion
+
         #region Explodable
         private bool IsExplodable(int x, int y)
         {
@@ -514,17 +524,6 @@ namespace Main.Screens.Game
                 case AppSettings.Field._Wall: return false;
                 case AppSettings.Field._Finnish: return false;
                 case AppSettings.Field._You: return false;
-                case AppSettings.Field._Enemy1: return true;
-            }
-            return false;
-        }
-        #endregion
-
-        #region Attackable
-        private bool IsAttackable(int x, int y)
-        {
-            switch (_landscape[y][x])
-            {
                 case AppSettings.Field._Enemy1: return true;
             }
             return false;

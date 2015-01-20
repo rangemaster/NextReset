@@ -101,6 +101,9 @@ namespace Main.Screens
         }
         private ILevel GetLevel(int level)
         {
+            // TODO: Convert To Json file
+            // TODO: Add Extended Json files (empty/unavailable)
+            // TODO: Add Easter Eggs
             switch (level)
             {
                 case 1: return new Level1();
