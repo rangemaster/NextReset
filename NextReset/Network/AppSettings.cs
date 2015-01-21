@@ -43,5 +43,32 @@ namespace Network
             public const string _Attack = "Attack";
             public const string _Bomb = "Bomb";
         }
+        public sealed class Messages
+        {
+            public sealed class Errors
+            {
+                public const string SetLevelName_ArgumentNull = "The name of the level is unknown";
+                public const string SetLandscape_ArgumentNull = "The tiles of the landscape are NULL";
+                public const string SetLandscape_Format = "The array of tiles for the landscape is lower then 9. This is to low for a usefull landscape";
+                public const string SetAvailableMethods_ArgumentNull = "The array of available methods is NULL";
+                public const string SetAvailableMethods_Format = "The array of available methods is to small";
+            }
+            public sealed class Feedback
+            {
+                public const string Loading = "Loading game...";
+                public const string UnableToLoad = "Could not load level!";
+            }
+        }
+        public sealed class Seperate
+        {
+            public const string LvlName = "Level name:";
+            public const string MethodNames = "Methods:";
+            public const string PathStart = "Path [";
+            public const string PathEnd = "]";
+            public const char PathSplit = ',';
+            public const char MethodSplit = ',';
+            public const string Exclude = "##";
+            public const string End = "END";
+        }
     }
 }

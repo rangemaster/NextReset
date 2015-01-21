@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest", "UnitTest\UnitTe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApplicationTest", "WpfApplicationTest\WpfApplicationTest.csproj", "{1F0142A9-64A0-4B49-80EB-2747B83B780F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NextResetServer", "NextResetServer\NextResetServer.csproj", "{AD5AB9CE-F5D7-46CF-BF3D-4AC36250A19D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		CD_ROM|Any CPU = CD_ROM|Any CPU
@@ -60,6 +62,16 @@ Global
 		{1F0142A9-64A0-4B49-80EB-2747B83B780F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1F0142A9-64A0-4B49-80EB-2747B83B780F}.SingleImage|Any CPU.ActiveCfg = Release|Any CPU
 		{1F0142A9-64A0-4B49-80EB-2747B83B780F}.SingleImage|Any CPU.Build.0 = Release|Any CPU
+		{AD5AB9CE-F5D7-46CF-BF3D-4AC36250A19D}.CD_ROM|Any CPU.ActiveCfg = Release|Any CPU
+		{AD5AB9CE-F5D7-46CF-BF3D-4AC36250A19D}.CD_ROM|Any CPU.Build.0 = Release|Any CPU
+		{AD5AB9CE-F5D7-46CF-BF3D-4AC36250A19D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD5AB9CE-F5D7-46CF-BF3D-4AC36250A19D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD5AB9CE-F5D7-46CF-BF3D-4AC36250A19D}.DVD-5|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD5AB9CE-F5D7-46CF-BF3D-4AC36250A19D}.DVD-5|Any CPU.Build.0 = Debug|Any CPU
+		{AD5AB9CE-F5D7-46CF-BF3D-4AC36250A19D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD5AB9CE-F5D7-46CF-BF3D-4AC36250A19D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD5AB9CE-F5D7-46CF-BF3D-4AC36250A19D}.SingleImage|Any CPU.ActiveCfg = Release|Any CPU
+		{AD5AB9CE-F5D7-46CF-BF3D-4AC36250A19D}.SingleImage|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

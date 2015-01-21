@@ -35,32 +35,39 @@ namespace Settings
                         ReaderLevel level = null;
                         while (reader.Peek() >= 0)
                         {
-                            string line = reader.ReadLine();
-                            if (!line.StartsWith("##"))
+                            try
                             {
-                                if (level == null)
-                                    level = new ReaderLevel();
-                                Debug.WriteLine("Using line: " + line);
-                                if (!line.Equals("END"))
-                                { SeperateLoadedLine(line, level); }
+                                string line = reader.ReadLine();
+                                if (!line.StartsWith(AppSettings.Seperate.Exclude))
+                                {
+                                    if (level == null)
+                                        level = new ReaderLevel();
+                                    if (!line.Equals(AppSettings.Seperate.End))
+                                    { SeperateLoadedLine(line, level); }
+                                    else
+                                    {
+                                        level.Init();
+                                        levels.Add(level);
+                                        level = null;
+                                    }
+
+                                }
                                 else
                                 {
-                                    level.Init();
-                                    levels.Add(level);
-                                    level = null;
+                                    Debug.WriteLine("Reading line: " + line);
                                 }
-
                             }
-                            else
-                            {
-                                Debug.WriteLine("Reading line: " + line);
-                            }
+                            catch (FormatException) { }
                         }
                         _levels = new Dictionary<string, ILevel>();
                         foreach (ILevel lvl in levels)
                         {
-                            string name = lvl.Name.Trim();
-                            _levels.Add(name, lvl);
+                            try
+                            {
+                                string name = lvl.Name.Trim();
+                                _levels.Add(name, lvl);
+                            }
+                            catch (NullReferenceException) { }
                         }
                         return true;
                     }
@@ -77,22 +84,22 @@ namespace Settings
 
         private void SeperateLoadedLine(String line, ReaderLevel Level)
         {
-            string ln = "Level name:";// TODO: Magic cookie
-            string ms = "Methods:"; // TODO: Magic cookie
-            if (line.StartsWith(ms))
+            string ln = AppSettings.Seperate.LvlName;
+            string mn = AppSettings.Seperate.MethodNames;
+            if (line.StartsWith(mn))
             {
-                String methods = line.Substring(ms.Length, line.Length - ms.Length);
+                String methods = line.Substring(mn.Length, line.Length - mn.Length);
                 int[] amountsOfMethod = MethodsToAmount(methods);
                 Level.Methods = amountsOfMethod;
             }
-            if (line.StartsWith("]"))
+            if (line.StartsWith(AppSettings.Seperate.PathEnd))
             {
                 readingPath = false;
                 Level.ConvertLandscapeRowToLandscape();
             }
             else if (readingPath)
             {
-                string[] array = line.Split(',');
+                string[] array = line.Split(AppSettings.Seperate.PathSplit);
                 int[] landscaperow = new int[array.Length];
                 for (int i = 0; i < landscaperow.Length; i++)
                 {
@@ -107,13 +114,13 @@ namespace Settings
                 name.Trim();
                 Level.Name = name;
             }
-            else if (line.StartsWith("Path [")) // TODO: Magic cookie
+            else if (line.StartsWith(AppSettings.Seperate.PathStart))
             { readingPath = true; }
         }
         private int[] MethodsToAmount(String methods)
         {
             int[] amounts = new int[AppSettings._MaximumAmountOfAvailableMethods];
-            String[] array = methods.Split(',');
+            String[] array = methods.Split(AppSettings.Seperate.MethodSplit);
             for (int i = 0; i < array.Length; i++)
             {
                 string method = array[i].Trim();
@@ -155,18 +162,17 @@ namespace Settings
         {
             using (StreamWriter write = new StreamWriter(fileLocation + "/" + filename.Substring(0, filename.Length - 5) + ".txt", false))
             {
-                write.WriteLine("## Replace me for '" + filename + "'");
-                write.WriteLine("##");
-                write.WriteLine("## Level name: ??");
-                write.WriteLine("## Path ##");
-                write.WriteLine("## (" + AppSettings.Field._Path + " = path, " + AppSettings.Field._Rock + " = Rock, " + AppSettings.Field._Wall + " = Wall)");
-                write.WriteLine("## (" + AppSettings.Field._You + " = you, " + AppSettings.Field._Finnish + " = Finnish)");
-                write.WriteLine("## [");
-                write.WriteLine("## 98, 0, 0, 1, 99");
-                write.WriteLine("## 1, 0, 0, 1, 0");
-                write.WriteLine("## ]");
-                write.WriteLine("## Right, 5, Left, 5, Up, 2");
-                write.WriteLine("## END");
+                write.WriteLine(AppSettings.Seperate.Exclude + " Replace me for '" + filename + "'");
+                write.WriteLine(AppSettings.Seperate.Exclude);
+                write.WriteLine(AppSettings.Seperate.Exclude + " " + AppSettings.Seperate.LvlName + " ??");
+                write.WriteLine(AppSettings.Seperate.Exclude + " " + AppSettings.Seperate.PathStart);
+                write.WriteLine(AppSettings.Seperate.Exclude + " (" + AppSettings.Field._Path + " = path, " + AppSettings.Field._Rock + " = Rock, " + AppSettings.Field._Wall + " = Wall)");
+                write.WriteLine(AppSettings.Seperate.Exclude + " (" + AppSettings.Field._You + " = you, " + AppSettings.Field._Finnish + " = Finnish)");
+                write.WriteLine(AppSettings.Seperate.Exclude + " 98, 0, 0, 1, 99");
+                write.WriteLine(AppSettings.Seperate.Exclude + " 1, 0, 0, 1, 0");
+                write.WriteLine(AppSettings.Seperate.Exclude + " " + AppSettings.Seperate.PathEnd);
+                write.WriteLine(AppSettings.Seperate.Exclude + " " + AppSettings.Seperate.MethodNames + " Right, 5, Left, 5, Up, 2");
+                write.WriteLine(AppSettings.Seperate.Exclude + " " + AppSettings.Seperate.End);
             }
             if (!File.Exists(fileLocation + "/" + filename))
             {
@@ -178,7 +184,7 @@ namespace Settings
                     writer.WriteLine("1, 98, 0, 0, 99, 1");
                     writer.WriteLine("1, 1, 1, 1, 1, 1");
                     writer.WriteLine("]");
-                    writer.WriteLine("Methods: Right, 3)");
+                    writer.WriteLine("Methods: Right, 3");
                     writer.WriteLine("END");
                 }
             }

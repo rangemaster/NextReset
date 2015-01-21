@@ -1,4 +1,5 @@
 ﻿using Main.Screens.Game;
+using Network;
 using Network.Levels;
 using Network.Singleton;
 using Network.ThrowableException;
@@ -39,25 +40,31 @@ namespace Main.Screens
             #endregion
             LoadLevels();
             List<StackPanel> panels = new List<StackPanel>();
-            for (int i = 0; i < 20; i++)
+            int index = 0;
+            try
             {
-                if (i % 5 == 0)
+                foreach (string key in _LevelsToPlay.Keys)
                 {
-                    panels.Add(CreateSelectionStackpanel());
+                    if (index % 5 == 0)
+                    {
+                        panels.Add(CreateSelectionStackpanel());
+                    }
+                    Button button = new Button();
+                    button.Content = key;
+                    button.Margin = new Thickness(10, 10, 10, 10);
+                    button.Click += button_Click;
+                    panels[index / 5].Children.Add(button);
+                    index++;
                 }
-                Button button = new Button();
-                button.Content = "Level " + (i + 1);
-                button.Margin = new Thickness(10, 10, 10, 10);
-                button.Click += button_Click;
-                panels[i / 5].Children.Add(button);
+                foreach (StackPanel sp in panels)
+                { _Buttons_Stackpanel.Children.Add(sp); }
             }
-            foreach (StackPanel sp in panels)
-            { _Buttons_Stackpanel.Children.Add(sp); }
+            catch (NullReferenceException) { }
         }
 
         void button_Click(object sender, RoutedEventArgs e)
         {
-            this._Feedback_tx.Text = "Loading game..."; // TODO: Magic cookie
+            this._Feedback_tx.Text = AppSettings.Messages.Feedback.Loading;
             string[] array = sender.ToString().Split(' ');
             string level = array[array.Length - 2] + " " + array[array.Length - 1];
             GoToSingleGame(level);
@@ -72,7 +79,7 @@ namespace Main.Screens
         {
             if (!SetCorrectGameData(level))
             {
-                this._Feedback_tx.Text = "Could not load level!"; // TODO: Magic cookie
+                this._Feedback_tx.Text = AppSettings.Messages.Feedback.UnableToLoad;
                 _clearTimer.Start();
                 return;
             }
@@ -81,7 +88,7 @@ namespace Main.Screens
                 SingleGamePage page = new SingleGamePage();
                 this.NavigationService.Navigate(page);
             }
-            catch (LevelUnstartubleException) { this._Feedback_tx.Text = "Could not load level!"; } // Magic cookie
+            catch (LevelUnstartubleException) { this._Feedback_tx.Text = AppSettings.Messages.Feedback.UnableToLoad; }
         }
         private bool SetCorrectGameData(string level)
         {
@@ -99,8 +106,6 @@ namespace Main.Screens
         }
         private ILevel GetLevel(string level)
         {
-            // TODO: Add Extended .reset files (empty/unavailable)
-            // TODO END: Add Easter Eggs
             try
             { return _LevelsToPlay[level]; }
             catch (KeyNotFoundException)
@@ -117,7 +122,7 @@ namespace Main.Screens
             GameController controller = new GameController();
             if (controller.HasLoaded())
             {
-                _LevelsToPlay = controller.GetLevels();
+                _LevelsToPlay = controller.GetLevels(); // TODO: Load from leveldata.reset
             }
         }
     }

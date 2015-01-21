@@ -16,8 +16,5 @@
         <Grid Grid.Row="1">
             <TextBlock x:Name="_About_tx" Text="[text]" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" Foreground="Aqua"/>
         </Grid>
-        <DockPanel>
-            <Frame x:Name="_NavigationFrame"/>
-        </DockPanel>
     </Grid>
 </Page>

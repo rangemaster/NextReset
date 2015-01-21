@@ -1,8 +1,10 @@
 ﻿using Main.Screens;
+using Settings.Network;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -22,6 +24,7 @@ namespace Main
     /// </summary>
     public partial class MainPage : Page
     {
+        private NetworkClient client;
         public MainPage()
         {
             InitializeComponent();
@@ -33,6 +36,8 @@ namespace Main
             AddButton("Settings", SettingsPage);
             AddButton("Help", HelpPage);
             AddButton("Exit", Exit);
+            AddButton("Test Connection", TestConnection);
+            AddButton("Send", SendMessage);
             Hyperlink link = new Hyperlink();
             link.Inlines.Add("Test");
             link.Click += AboutPage;
@@ -79,6 +84,16 @@ namespace Main
             SaveSettings();
             SaveAppData();
             Application.Current.Shutdown(0);
+        }
+        private void TestConnection(object sender, RoutedEventArgs e)
+        {
+            client = new NetworkClient();
+            client.Connect();
+        }
+        private void SendMessage(object sender, RoutedEventArgs e)
+        {
+            if (client != null)
+                client.SendMessage("Test message from client");
         }
         #endregion
 

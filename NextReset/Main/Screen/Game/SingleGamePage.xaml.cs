@@ -21,11 +21,9 @@ using System.Windows.Threading;
 
 namespace Main.Screens.Game
 {
-    /// <summary>
-    /// Interaction logic for SingleGamePage.xaml
-    /// </summary>
     public partial class SingleGamePage : Page
     {
+        // TODO END: Add Easter Eggs
         private List<Tuple<string, AvailableCommand>> _AvailableCommands;
         private List<Tuple<string, AvailableCommand>> _commandos;
         private DispatcherTimer commandoTimer = null;

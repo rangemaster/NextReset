@@ -17,7 +17,6 @@ namespace Network.Levels
         { }
         public void Init()
         {
-            Debug.WriteLine("ILevel Init");
             _landscape = SetLandscape();
             _availablemethods = SetAvailableMethods();
             _name = SetNameOfClass();

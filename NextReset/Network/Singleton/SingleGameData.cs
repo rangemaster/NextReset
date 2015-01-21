@@ -29,23 +29,23 @@ namespace Network.Singleton
         public void SetAvailableMethods(int[] availablemethods)
         {
             if (availablemethods == null)
-                throw new ArgumentNullException("The array of available methods is NULL");
+                throw new ArgumentNullException(AppSettings.Messages.Errors.SetAvailableMethods_ArgumentNull);
             if (availablemethods.Length < AppSettings._MinimumAmountOfAvailableMethods)
-                throw new FormatException("The array of available methods is to small");
+                throw new FormatException(AppSettings.Messages.Errors.SetAvailableMethods_Format);
             this._AvailableMethods = availablemethods;
         }
         public void SetLandscape(int[][] tiles)
         {
             if (tiles == null)
-                throw new ArgumentNullException("The tiles of the landscape are NULL");
+                throw new ArgumentNullException(AppSettings.Messages.Errors.SetLandscape_ArgumentNull);
             if (Count(tiles) < 9)
-                throw new FormatException("The array of tiles for the landscape is lower then 9. This is to low for a usefull landscape");
+                throw new FormatException(AppSettings.Messages.Errors.SetLandscape_Format);
             this._Landscape = tiles;
         }
         public void SetLevelName(string name)
         {
             if (name == null || name == "")
-                throw new ArgumentNullException("The name of the level is unknown");
+                throw new ArgumentNullException(AppSettings.Messages.Errors.SetLevelName_ArgumentNull);
             this._Name = name;
         }
         private int Count(int[][] tiles)
