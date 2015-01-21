@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,10 @@ namespace Network.Levels
         private int[] _availablemethods;
         private string _name;
         public ILevel()
+        { }
+        public void Init()
         {
+            Debug.WriteLine("ILevel Init");
             _landscape = SetLandscape();
             _availablemethods = SetAvailableMethods();
             _name = SetNameOfClass();
@@ -32,7 +36,7 @@ namespace Network.Levels
         public int[] Methods { get { return _availablemethods; } }
         public string Name { get { return _name; } }
         public override string ToString()
-        { return "Class: " + _name; }
+        { return "Class: " + _name + ", (x" + _landscape[0].Length + ", y" + _landscape.Length + ")"; }
         internal int[] landscape_row_help(params int[] x_as)
         { return x_as; }
         internal int[][] landscape_help(params int[][] y_as)

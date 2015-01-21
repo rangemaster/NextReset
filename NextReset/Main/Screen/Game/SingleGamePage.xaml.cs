@@ -100,7 +100,6 @@ namespace Main.Screens.Game
                     rect.Margin = new Thickness(1, 1, 1, 1);
                     rect.Width = (width - columns) / columns;
                     rect.Height = (height - rows) / rows;
-                    Debug.WriteLine("RectWidth: " + ((width - columns) / columns) + ", RectHeight: " + ((height - rows) / rows));
                     sp.Children.Add(rect);
                 }
                 _Field_Panel.Children.Add(sp);

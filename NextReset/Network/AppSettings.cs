@@ -10,6 +10,7 @@ namespace Network
     public class AppSettings
     {
         public static int _MinimumAmountOfAvailableMethods = 4;
+        public static int _MaximumAmountOfAvailableMethods = 6;
         public class Color
         {
             public static Brush _Path = new SolidColorBrush(Colors.LightGoldenrodYellow);
@@ -35,7 +36,12 @@ namespace Network
             public const string _Left = "Left";
             public const string _Up = "Up";
             public const string _Down = "Down";
-            public const string[] _All = new string[] { _Right, _Left, _Up, _Down };
+            public static string[] _All = new string[] { _Right, _Left, _Up, _Down };
+        }
+        public sealed class Normal
+        {
+            public const string _Attack = "Attack";
+            public const string _Bomb = "Bomb";
         }
     }
 }

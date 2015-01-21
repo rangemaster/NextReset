@@ -2,6 +2,7 @@
 using Network.Levels;
 using Network.Singleton;
 using Network.ThrowableException;
+using Settings;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -20,12 +21,10 @@ using System.Windows.Threading;
 
 namespace Main.Screens
 {
-    /// <summary>
-    /// Interaction logic for StartPage.xaml
-    /// </summary>
     public partial class StartPage : Page
     {
         private DispatcherTimer _clearTimer;
+        private Dictionary<string, ILevel> _LevelsToPlay = null;
         public StartPage()
         {
             InitializeComponent();
@@ -38,6 +37,7 @@ namespace Main.Screens
             _clearTimer.Interval = new TimeSpan(0, 0, 2);
             _clearTimer.Tick += Timer_Tick;
             #endregion
+            LoadLevels();
             List<StackPanel> panels = new List<StackPanel>();
             for (int i = 0; i < 20; i++)
             {
@@ -57,10 +57,9 @@ namespace Main.Screens
 
         void button_Click(object sender, RoutedEventArgs e)
         {
-            this._Feedback_tx.Text = "Loading game...";
-            string button_name = sender.ToString();
-            string[] array = button_name.Split(' ');
-            int level = int.Parse(array[array.Length - 1]);
+            this._Feedback_tx.Text = "Loading game..."; // TODO: Magic cookie
+            string[] array = sender.ToString().Split(' ');
+            string level = array[array.Length - 2] + " " + array[array.Length - 1];
             GoToSingleGame(level);
         }
         private StackPanel CreateSelectionStackpanel()
@@ -69,11 +68,11 @@ namespace Main.Screens
             sp.Width = 100;
             return sp;
         }
-        private void GoToSingleGame(int level)
+        private void GoToSingleGame(string level)
         {
             if (!SetCorrectGameData(level))
             {
-                this._Feedback_tx.Text = "Could not load level!";
+                this._Feedback_tx.Text = "Could not load level!"; // TODO: Magic cookie
                 _clearTimer.Start();
                 return;
             }
@@ -82,11 +81,10 @@ namespace Main.Screens
                 SingleGamePage page = new SingleGamePage();
                 this.NavigationService.Navigate(page);
             }
-            catch (LevelUnstartubleException) { this._Feedback_tx.Text = "Could not load level!"; }
+            catch (LevelUnstartubleException) { this._Feedback_tx.Text = "Could not load level!"; } // Magic cookie
         }
-        private bool SetCorrectGameData(int level)
+        private bool SetCorrectGameData(string level)
         {
-            Debug.WriteLine("Settings GameData: Level " + level);
             SingleGameData data = SingleGameData.Get;
             ILevel ilevel = GetLevel(level);
             try
@@ -99,25 +97,28 @@ namespace Main.Screens
             catch (ArgumentNullException) { return false; }
             return true;
         }
-        private ILevel GetLevel(int level)
+        private ILevel GetLevel(string level)
         {
-            // TODO: Convert To Json file
-            // TODO: Add Extended Json files (empty/unavailable)
-            // TODO: Add Easter Eggs
-            switch (level)
-            {
-                case 1: return new Level1();
-                case 2: return new Level2();
-                case 3: return new Level3();
-                case 4: return new Level4();
-                case 5: return new Level5();
-            }
-            return null;
+            // TODO: Add Extended .reset files (empty/unavailable)
+            // TODO END: Add Easter Eggs
+            try
+            { return _LevelsToPlay[level]; }
+            catch (KeyNotFoundException)
+            { return null; }
         }
         private void Timer_Tick(object sender, EventArgs e)
         {
             this._Feedback_tx.Text = "";
             this._clearTimer.Stop();
+        }
+        private void LoadLevels()
+        {
+            Debug.WriteLine("Load levels");
+            GameController controller = new GameController();
+            if (controller.HasLoaded())
+            {
+                _LevelsToPlay = controller.GetLevels();
+            }
         }
     }
 }
