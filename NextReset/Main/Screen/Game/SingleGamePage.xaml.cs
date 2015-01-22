@@ -21,7 +21,7 @@ using System.Windows.Threading;
 
 namespace Main.Screens.Game
 {
-    public partial class SingleGamePage : Page
+    public partial class SingleGamePage : PageFunction<String>
     {
         // TODO END: Add Easter Eggs
         private List<Tuple<string, AvailableCommand>> _AvailableCommands;
@@ -32,6 +32,7 @@ namespace Main.Screens.Game
         private Point _yourPosition = new Point(-2, -2), _finnish = new Point(-2, -2);
         private int[][] _landscape;
         private int[] _available_methods;
+        private string _level_name;
         public SingleGamePage()
         {
             InitializeComponent();
@@ -76,6 +77,9 @@ namespace Main.Screens.Game
             #region methods
             _available_methods = null;
             _available_methods = SingleGameData.Get.GetAvailableMethods;
+            #endregion
+            #region name
+            _level_name = SingleGameData.Get.GetLevelName;
             #endregion
         }
         #endregion
@@ -147,7 +151,6 @@ namespace Main.Screens.Game
         #endregion
         private void SetDefaultPositions()
         {
-            Debug.WriteLine("Set Default Positions");
             for (int y = 0; y < _landscape.Length; y++)
                 for (int x = 0; x < _landscape[y].Length; x++)
                     if (_landscape[y][x] == AppSettings.Field._You)
@@ -327,16 +330,17 @@ namespace Main.Screens.Game
                     UpdateView();
                     CheckPosition();
                 }
-                catch (OutOfTheGameException) { StopCommandList(); ErrorMessage("Out Of The Game Error"); }
+                catch (OutOfTheGameException) { StopCommandList(); ErrorMessage("Out Of The Game Error"); } // TODO: Magic cookie
                 catch (ReachedFinnishException)
                 {
                     if (_commandos.Count == _commandoInteger)
                     {
                         StopCommandList();
                         Debug.WriteLine("You have reached the finnish");
-                        CongratzMessage("You have reached the finnish");
+                        CongratzMessage("You have reached the finnish"); // TODO: Magic cookie
+                        OnReturn(new ReturnEventArgs<String>("Compleet, " + _level_name)); // TODO: Magic cookie
                     }
-                    else Debug.WriteLine("You have reached your finnish");
+                    else Debug.WriteLine("You have reached your finnish"); // TODO: Magic cookie
                 }
             }
         }

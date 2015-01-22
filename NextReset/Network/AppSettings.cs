@@ -21,6 +21,11 @@ namespace Network
             public static Brush _Finnish = new SolidColorBrush(Colors.YellowGreen);
             public static Brush _Unknown = new SolidColorBrush(Colors.Cyan);
         }
+        public class ButtonLevelColor
+        {
+            public static Brush _Compleet = new SolidColorBrush(Colors.YellowGreen);
+            public static Brush _NotCompleet = new SolidColorBrush(Colors.LightCyan);
+        }
         public sealed class Field
         {
             public const int _Path = 0;
@@ -57,6 +62,8 @@ namespace Network
             {
                 public const string Loading = "Loading game...";
                 public const string UnableToLoad = "Could not load level!";
+                public const string Saving = "Saving game...";
+                public const string None = "";
             }
         }
         public sealed class Seperate
@@ -69,6 +76,11 @@ namespace Network
             public const char MethodSplit = ',';
             public const string Exclude = "##";
             public const string End = "END";
+        }
+        public sealed class SaveOrLoad
+        {
+            public const string _State_Location = "GameData";
+            public const string _State_Filename = "State.reset";
         }
     }
 }

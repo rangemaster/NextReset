@@ -13,8 +13,8 @@ namespace Settings
 {
     public class GameController
     {
-        private string fileLocation = "GameData";
-        private string filename = @"Gamedata.reset";
+        private string fileLocation = "GameData"; // TODO: Magic cookie
+        private string filename = @"Gamedata.reset"; // TODO: Magic cookie
         private Dictionary<string, ILevel> _levels = null;
         private bool readingPath = false;
         public GameController()
