@@ -13,9 +13,10 @@ namespace Settings
 {
     public class GameController
     {
-        private string fileLocation = "GameData"; // TODO: Magic cookie
-        private string filename = @"Gamedata.reset"; // TODO: Magic cookie
+        private string sourceLocation = AppSettings.SaveOrLoad._Level_Source_Location;
+        private string sourceFilename = AppSettings.SaveOrLoad._Level_Source_Filename;
         private Dictionary<string, ILevel> _levels = null;
+        private List<string> _Patches = null;
         private bool readingPath = false;
         public GameController()
         { }
@@ -25,12 +26,22 @@ namespace Settings
         {
             if (_levels != null)
                 return true;
-            if (Directory.Exists(fileLocation))
+
+            if (!Directory.Exists(sourceLocation))
+            { CreateDirectory(); }
+            if (!File.Exists(sourceLocation + "/" + sourceFilename))
+            { CreateExample(); }
+            LoadPatches(sourceLocation, sourceFilename);
+            _levels = new Dictionary<string, ILevel>();
+
+            string location = sourceLocation;
+            Debug.WriteLine("Loading Patches (" + _Patches.Count + ")");
+            foreach (string patch in _Patches)
             {
-                if (File.Exists(fileLocation + "/" + filename))
+                List<ILevel> levels = new List<ILevel>();
+                try
                 {
-                    List<ILevel> levels = new List<ILevel>();
-                    using (StreamReader reader = new StreamReader(fileLocation + "/" + filename))
+                    using (StreamReader reader = new StreamReader(location + "/" + patch))
                     {
                         ReaderLevel level = null;
                         while (reader.Peek() >= 0)
@@ -41,7 +52,7 @@ namespace Settings
                                 if (!line.StartsWith(AppSettings.Seperate.Exclude))
                                 {
                                     if (level == null)
-                                        level = new ReaderLevel();
+                                    { level = new ReaderLevel(); }
                                     if (!line.Equals(AppSettings.Seperate.End))
                                     { SeperateLoadedLine(line, level); }
                                     else
@@ -50,33 +61,40 @@ namespace Settings
                                         levels.Add(level);
                                         level = null;
                                     }
-
                                 }
                                 else
-                                {
-                                    Debug.WriteLine("Reading line: " + line);
-                                }
+                                { Debug.WriteLine("Reading line: " + line); }
                             }
                             catch (FormatException) { }
                         }
-                        _levels = new Dictionary<string, ILevel>();
+
                         foreach (ILevel lvl in levels)
-                        {
-                            try
-                            {
-                                string name = lvl.Name.Trim();
-                                _levels.Add(name, lvl);
-                            }
-                            catch (NullReferenceException) { }
-                        }
-                        return true;
+                        { try { _levels.Add(lvl.Name.Trim(), lvl); } catch (NullReferenceException) { } }
                     }
                 }
-                else
-                { CreateExample(); }
+                catch (FileNotFoundException) { Debug.WriteLine("Patch [" + patch + "] does not exists"); }
             }
-            else { CreateDirectory(); }
-            return false;
+            return true;
+        }
+        #endregion
+
+        #region Loading
+        private void LoadPatches(string location, string name)
+        {
+            if (_Patches == null)
+            {
+                _Patches = new List<string>();
+                if (!File.Exists(location + "/" + name))
+                { using (StreamWriter writer = new StreamWriter(location + "/" + name)) { writer.WriteLine("Starters.reset"); } }
+                using (StreamReader reader = new StreamReader(location + "/" + name))
+                {
+                    while (reader.Peek() >= 0)
+                    {
+                        string line = reader.ReadLine();
+                        _Patches.Add(line);
+                    }
+                }
+            }
         }
         #endregion
 
@@ -155,12 +173,13 @@ namespace Settings
 
         private void CreateDirectory()
         {
-            Directory.CreateDirectory(fileLocation);
+            Directory.CreateDirectory(sourceLocation);
             CreateExample();
         }
         private void CreateExample()
         {
-            using (StreamWriter write = new StreamWriter(fileLocation + "/" + filename.Substring(0, filename.Length - 5) + ".txt", false))
+            string filename = "Starters.reset";
+            using (StreamWriter write = new StreamWriter(sourceLocation + "/" + filename.Substring(0, filename.Length - 5) + ".txt", false))
             {
                 write.WriteLine(AppSettings.Seperate.Exclude + " Replace me for '" + filename + "'");
                 write.WriteLine(AppSettings.Seperate.Exclude);
@@ -174,9 +193,9 @@ namespace Settings
                 write.WriteLine(AppSettings.Seperate.Exclude + " " + AppSettings.Seperate.MethodNames + " Right, 5, Left, 5, Up, 2");
                 write.WriteLine(AppSettings.Seperate.Exclude + " " + AppSettings.Seperate.End);
             }
-            if (!File.Exists(fileLocation + "/" + filename))
+            if (!File.Exists(sourceLocation + "/" + filename))
             {
-                using (StreamWriter writer = new StreamWriter(fileLocation + "/" + filename))
+                using (StreamWriter writer = new StreamWriter(sourceLocation + "/" + filename))
                 {
                     writer.WriteLine("Level name: level 1");
                     writer.WriteLine("Path [");

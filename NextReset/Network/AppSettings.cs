@@ -79,8 +79,9 @@ namespace Network
         }
         public sealed class SaveOrLoad
         {
-            public const string _State_Location = "GameData";
             public const string _State_Filename = "State.reset";
+            public const string _Level_Source_Location= "GameData";
+            public const string _Level_Source_Filename = "GameData.reset";
         }
     }
 }

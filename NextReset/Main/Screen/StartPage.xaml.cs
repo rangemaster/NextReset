@@ -46,6 +46,7 @@ namespace Main.Screens
             LoadLevels();
             UpdateLevelButtons();
         }
+
         #region Update
         private void UpdateLevelButtons()
         {
@@ -63,11 +64,10 @@ namespace Main.Screens
                     button.Content = key;
                     button.Margin = new Thickness(10, 10, 10, 10);
                     button.Click += button_Click;
-                    Debug.WriteLine("Level compleeted: " + _LevelCompleted[key]);
                     if (_LevelCompleted[key] == true)
-                    { Debug.WriteLine("Level Completed: " + key); button.Background = AppSettings.ButtonLevelColor._Compleet; }
+                    { button.Background = AppSettings.ButtonLevelColor._Compleet; }
                     else
-                    { Debug.WriteLine("Level Not Completed: " + key); button.Background = AppSettings.ButtonLevelColor._NotCompleet; }
+                    { button.Background = AppSettings.ButtonLevelColor._NotCompleet; }
                     panels[index / 5].Children.Add(button);
                     index++;
                 }
@@ -129,6 +129,7 @@ namespace Main.Screens
             }
             catch (NullReferenceException) { return false; }
             catch (ArgumentNullException) { return false; }
+            catch (FormatException) { return false;}
             return true;
         }
         private ILevel GetLevel(string level)
@@ -138,11 +139,16 @@ namespace Main.Screens
             catch (KeyNotFoundException)
             { return null; }
         }
+
+        #region Timer Tick
         private void Timer_Tick(object sender, EventArgs e)
         {
             this._Feedback_tx.Text = AppSettings.Messages.Feedback.None;
             this._clearTimer.Stop();
         }
+        #endregion
+
+        #region Load Levels
         private void LoadLevels()
         {
             Debug.WriteLine("Load levels");
@@ -155,8 +161,7 @@ namespace Main.Screens
             { _LevelCompleted.Add(key, false); }
             Load_State();
         }
-
-        #region Save
+        #endregion
 
         #region Save Level
 
@@ -166,9 +171,7 @@ namespace Main.Screens
             {
                 level_name.Trim();
                 _LevelCompleted[level_name] = true;
-                Debug.WriteLine("Level: [" + level_name + "] - Compleet");
-                Debug.WriteLine("Print: " + _LevelCompleted[level_name]);
-            } // TODO: Implementation
+            }
             UpdateLevelButtons();
         }
 
@@ -177,7 +180,7 @@ namespace Main.Screens
         #region Save State
         private void Save_State()
         {
-            string location = AppSettings.SaveOrLoad._State_Location;
+            string location = AppSettings.SaveOrLoad._Level_Source_Location;
             string filename = AppSettings.SaveOrLoad._State_Filename;
             if (!Directory.Exists(location)) // TODO: Abstractie / Move
             { Directory.CreateDirectory(location); }
@@ -186,17 +189,13 @@ namespace Main.Screens
                 foreach (string key in _LevelCompleted.Keys)
                 { Save(writer, key, _LevelCompleted[key]); }
             }
-            // TODO: Implementation
         }
         #endregion
 
-        #endregion
-
-        #region Load
         #region Load State
         private void Load_State()
         {
-            string location = AppSettings.SaveOrLoad._State_Location;
+            string location = AppSettings.SaveOrLoad._Level_Source_Location;
             string filename = AppSettings.SaveOrLoad._State_Filename;
             if (Directory.Exists(location))
             {
@@ -220,10 +219,9 @@ namespace Main.Screens
                     }
                 }
             }
-            // TODO: Implementation
         }
         #endregion
-        #endregion
+
         #region Help Functions
         private void Save(StreamWriter writer, string levelname, bool state)
         { writer.WriteLine(levelname + ", " + state); }
