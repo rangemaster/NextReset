@@ -1,9 +1,11 @@
-﻿using Main.Screens.Game;
+﻿using Main.Screen.Admin;
+using Main.Screens.Game;
 using Network;
 using Network.Levels;
 using Network.Singleton;
 using Network.ThrowableException;
 using Settings;
+using Settings.Singleton;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -26,13 +28,15 @@ namespace Main.Screens
 {
     public partial class StartPage : Page
     {
+        // TODO: Message First time?
         private DispatcherTimer _clearTimer;
-        private Dictionary<string, ILevel> _LevelsToPlay = null;
-        private Dictionary<string, bool> _LevelCompleted = null;
         public StartPage()
         {
             InitializeComponent();
             Init();
+            MessageBoxResult result = MessageBox.Show("Is this your first time?", "Question", MessageBoxButton.YesNo);
+            if (result == MessageBoxResult.Yes)
+            { FirstTime(); }
         }
         private void Init()
         {
@@ -42,7 +46,7 @@ namespace Main.Screens
             _clearTimer.Tick += Timer_Tick;
             #endregion
 
-            _LevelCompleted = new Dictionary<string, bool>();
+            LevelData data = LevelData.Get;
             LoadLevels();
             UpdateLevelButtons();
         }
@@ -54,7 +58,7 @@ namespace Main.Screens
             int index = 0;
             try
             {
-                foreach (string key in _LevelsToPlay.Keys)
+                foreach (string key in LevelData.Get.LevelsToPlay.Keys)
                 {
                     if (index % 5 == 0)
                     {
@@ -64,7 +68,7 @@ namespace Main.Screens
                     button.Content = key;
                     button.Margin = new Thickness(10, 10, 10, 10);
                     button.Click += button_Click;
-                    if (_LevelCompleted[key] == true)
+                    if (LevelData.Get.LevelCompleted[key] == true)
                     { button.Background = AppSettings.ButtonLevelColor._Compleet; }
                     else
                     { button.Background = AppSettings.ButtonLevelColor._NotCompleet; }
@@ -81,7 +85,7 @@ namespace Main.Screens
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
-            this._Feedback_tx.Text = AppSettings.Messages.Feedback.Loading;
+            this._Feedback_tx.Text = AppSettings.Messages.UserFeedback.Loading;
             string[] array = sender.ToString().Split(' ');
             string level = array[array.Length - 2] + " " + array[array.Length - 1];
             GoToSingleGame(level);
@@ -96,7 +100,7 @@ namespace Main.Screens
         {
             if (!SetCorrectGameData(level))
             {
-                this._Feedback_tx.Text = AppSettings.Messages.Feedback.UnableToLoad;
+                this._Feedback_tx.Text = AppSettings.Messages.UserFeedback.UnableToLoad;
                 _clearTimer.Start();
                 return;
             }
@@ -106,16 +110,18 @@ namespace Main.Screens
                 page.Return += new System.Windows.Navigation.ReturnEventHandler<String>(OnSingleGamePageReturned);
                 this.NavigationService.Navigate(page);
             }
-            catch (LevelUnstartubleException) { this._Feedback_tx.Text = AppSettings.Messages.Feedback.UnableToLoad; }
+            catch (LevelUnstartubleException) { this._Feedback_tx.Text = AppSettings.Messages.UserFeedback.UnableToLoad; }
+            catch (IndexOutOfRangeException) { this._Feedback_tx.Text = AppSettings.Messages.UserFeedback.UnableToLoad; }
         }
         private void OnSingleGamePageReturned(object sender, ReturnEventArgs<String> e)
         {
-            _Feedback_tx.Text = AppSettings.Messages.Feedback.Saving;
+            _Feedback_tx.Text = AppSettings.Messages.UserFeedback.Saving;
             string message = e.Result.Trim();
             string[] array = message.Split(',');
-            SaveLevel(array[0].Trim(), array[1].Trim());
-            Save_State();
-            _Feedback_tx.Text = AppSettings.Messages.Feedback.None;
+            LevelData.Get.SaveLevel(array[0].Trim(), array[1].Trim());
+            LevelData.Get.Save_State();
+            _Feedback_tx.Text = AppSettings.Messages.UserFeedback.None;
+            UpdateLevelButtons();
         }
         private bool SetCorrectGameData(string level)
         {
@@ -129,13 +135,13 @@ namespace Main.Screens
             }
             catch (NullReferenceException) { return false; }
             catch (ArgumentNullException) { return false; }
-            catch (FormatException) { return false;}
+            catch (FormatException) { return false; }
             return true;
         }
         private ILevel GetLevel(string level)
         {
             try
-            { return _LevelsToPlay[level]; }
+            { return LevelData.Get.LevelsToPlay[level]; }
             catch (KeyNotFoundException)
             { return null; }
         }
@@ -143,7 +149,7 @@ namespace Main.Screens
         #region Timer Tick
         private void Timer_Tick(object sender, EventArgs e)
         {
-            this._Feedback_tx.Text = AppSettings.Messages.Feedback.None;
+            this._Feedback_tx.Text = AppSettings.Messages.UserFeedback.None;
             this._clearTimer.Stop();
         }
         #endregion
@@ -155,78 +161,107 @@ namespace Main.Screens
             GameController controller = new GameController();
             if (controller.HasLoaded())
             {
-                _LevelsToPlay = controller.GetLevels(); // TODO: Load from leveldata.reset
+                LevelData.Get.SetLevelsToPlay(controller.GetLevels());
             }
-            foreach (string key in _LevelsToPlay.Keys)
-            { _LevelCompleted.Add(key, false); }
-            Load_State();
+            Dictionary<string, bool> completed = new Dictionary<string, bool>();
+            foreach (string key in LevelData.Get.LevelsToPlay.Keys)
+            { completed.Add(key, false); }
+            LevelData.Get.SetLevelsCompleted(completed);
+            LevelData.Get.Load_State();
         }
         #endregion
 
-        #region Save Level
-
-        private void SaveLevel(string state, string level_name)
+        #region Easter Eggs
+        #region Easter Egg Top Rect
+        #region Rectangles
+        private int _rect_counter = 0;
+        private void _Title_rect1_MouseEnter(object sender, MouseEventArgs e)
         {
-            if (state.Equals("Compleet")) // TODO: Magic cookie
+            switch (_rect_counter)
             {
-                level_name.Trim();
-                _LevelCompleted[level_name] = true;
+                case 2: SetRect1(Colors.Beige); break;
+                case 6: SetRect1(Colors.Green); break;
+                default: _rect_counter = 0; return;
             }
+            _rect_counter++;
+        }
+        private void _Title_rect2_MouseEnter(object sender, MouseEventArgs e)
+        {
+            switch (_rect_counter)
+            {
+                case 0: SetRect2(Colors.Aqua); break;
+                case 4: SetRect2(Colors.Aquamarine); break;
+                default: _rect_counter = 0; return;
+            }
+            _rect_counter++;
+        }
+        private void _Title_rect3_MouseEnter(object sender, MouseEventArgs e)
+        {
+            switch (_rect_counter)
+            {
+                case 1: SetRect3(Colors.Wheat); break;
+                case 5: SetRect3(Colors.Gold); break;
+                default: _rect_counter = 0; return;
+            }
+            _rect_counter++;
+        }
+        private void _Title_rect4_MouseEnter(object sender, MouseEventArgs e)
+        {
+            switch (_rect_counter)
+            {
+                case 3: SetRect4(Colors.Gainsboro); break;
+                case 7: ExecuteTopRect(); break;
+                default: _rect_counter = 0; return;
+            }
+            _rect_counter++;
+        }
+        #endregion
+        #region SetColor
+        private void SetRect1(Color color) { _Title_rect1.Fill = new SolidColorBrush(color); }
+        private void SetRect2(Color color) { _Title_rect2.Fill = new SolidColorBrush(color); }
+        private void SetRect3(Color color) { _Title_rect3.Fill = new SolidColorBrush(color); }
+        private void SetRect4(Color color) { _Title_rect4.Fill = new SolidColorBrush(color); }
+        #endregion
+        #region navigation handling
+        private void ExecuteTopRect()
+        {
+            MessageBoxResult result = MessageBox.Show("You want to continue", "Admin", MessageBoxButton.YesNo); // TODO: Magic cookie
+            if (result == MessageBoxResult.Yes)
+            {
+                AdminPage page = new AdminPage();
+                page.Return += page_Return;
+                this.NavigationService.Navigate(page);
+            }
+            else { ResetRectEasterEgg(); }
+        }
+
+        private void page_Return(object sender, ReturnEventArgs<string> e)
+        {
+            if (e.Result.Equals(AppSettings.Return.Succes))
+            { MessageBox.Show(AppSettings.Messages.UserFeedback.AdminChanges); }
+            else if (e.Result.Equals(AppSettings.Return.NoSucces))
+            { }
+            ResetRectEasterEgg();
             UpdateLevelButtons();
         }
-
         #endregion
-
-        #region Save State
-        private void Save_State()
+        #region reset
+        private void ResetRectEasterEgg()
         {
-            string location = AppSettings.SaveOrLoad._Level_Source_Location;
-            string filename = AppSettings.SaveOrLoad._State_Filename;
-            if (!Directory.Exists(location)) // TODO: Abstractie / Move
-            { Directory.CreateDirectory(location); }
-            using (StreamWriter writer = new StreamWriter(location + "/" + filename))
-            {
-                foreach (string key in _LevelCompleted.Keys)
-                { Save(writer, key, _LevelCompleted[key]); }
-            }
+            _rect_counter = 0;
+            SetRect1(Colors.White);
+            SetRect2(Colors.White);
+            SetRect3(Colors.White);
+            SetRect4(Colors.White);
         }
         #endregion
+        #endregion
 
-        #region Load State
-        private void Load_State()
+        #endregion
+
+        private void FirstTime()
         {
-            string location = AppSettings.SaveOrLoad._Level_Source_Location;
-            string filename = AppSettings.SaveOrLoad._State_Filename;
-            if (Directory.Exists(location))
-            {
-                if (File.Exists(location + "/" + filename))
-                {
-                    using (StreamReader reader = new StreamReader(location + "/" + filename))
-                    {
-                        while (reader.Peek() >= 0)
-                        {
-                            try
-                            {
-                                string[] array = Load(reader);
-                                string level_name = array[0].Trim();
-                                if (_LevelCompleted.ContainsKey(level_name))
-                                { _LevelCompleted[level_name] = bool.Parse(array[1].Trim()); }
-                                else { Debug.WriteLine("Does not contain key: [" + level_name + "]"); }
-                            }
-                            catch (FormatException) { Debug.WriteLine("Loading Format exception"); }
-                            catch (IndexOutOfRangeException) { Debug.WriteLine("Loading index exception"); }
-                        }
-                    }
-                }
-            }
+            Debug.WriteLine("First time"); 
         }
-        #endregion
-
-        #region Help Functions
-        private void Save(StreamWriter writer, string levelname, bool state)
-        { writer.WriteLine(levelname + ", " + state); }
-        private string[] Load(StreamReader reader)
-        { return reader.ReadLine().Split(','); }
-        #endregion
     }
 }

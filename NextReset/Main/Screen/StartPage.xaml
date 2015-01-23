@@ -8,8 +8,11 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0">
+            <Rectangle x:Name="_Title_rect1" Width="50" Height="50" Fill="White" HorizontalAlignment="Left" MouseEnter="_Title_rect1_MouseEnter"/>
+            <Rectangle x:Name="_Title_rect2" Width="50" Height="50" Fill="White" HorizontalAlignment="Right" MouseEnter="_Title_rect2_MouseEnter"/>
             <TextBlock x:Name="_Title_tx" Text="Selection" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20"/>
         </Grid>
         <Grid Grid.Row="1">
@@ -20,6 +23,10 @@
                     <TextBlock x:Name="_Feedback_tx" FontSize="20" Foreground="Purple" HorizontalAlignment="Center"/>
                 </StackPanel>
             </StackPanel>
+        </Grid>
+        <Grid Grid.Row="2">
+            <Rectangle x:Name="_Title_rect3" Width="50" Height="50" Fill="White" HorizontalAlignment="Left" MouseEnter="_Title_rect3_MouseEnter"/>
+            <Rectangle x:Name="_Title_rect4" Width="50" Height="50" Fill="White" HorizontalAlignment="Right" MouseEnter="_Title_rect4_MouseEnter"/>
         </Grid>
     </Grid>
 </Page>

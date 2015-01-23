@@ -54,6 +54,7 @@
     <Compile Include="Network\NetworkClient.cs" />
     <Compile Include="Network\NetworkListener.cs" />
     <Compile Include="Network\NetworkPackage.cs" />
+    <Compile Include="Singleton\LevelData.cs" />
     <Compile Include="ThrowableException\LevelNotFoundException.cs" />
     <Compile Include="ThrowableException\LevelUnstartubleException.cs" />
     <Compile Include="ThrowableException\LocationUnknownException.cs" />

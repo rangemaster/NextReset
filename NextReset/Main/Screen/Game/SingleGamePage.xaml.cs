@@ -2,6 +2,7 @@
 using Network.Commando;
 using Network.Singleton;
 using Network.ThrowableException;
+using Settings.Singleton;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -39,12 +40,8 @@ namespace Main.Screens.Game
             _AvailableCommands = new List<Tuple<string, AvailableCommand>>();
             _commandos = new List<Tuple<string, AvailableCommand>>();
 
-            #region InitTimer
-            commandoTimer = new DispatcherTimer();
-            commandoTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);
-            commandoTimer.Tick += commandoTimer_Tick;
-            #endregion
             Init();
+            InitTimer();
         }
 
         #region Init
@@ -56,6 +53,16 @@ namespace Main.Screens.Game
             InitAvailableFunctions();
             InitUpdate();
         }
+
+        #region InitTimer
+        private void InitTimer()
+        {
+            this.commandoTimer = null;
+            this.commandoTimer = new DispatcherTimer();
+            this.commandoTimer.Interval = new TimeSpan(0, 0, 0, 0, LevelData.Get.TimerSpeed);
+            this.commandoTimer.Tick += commandoTimer_Tick;
+        }
+        #endregion
 
         #region InitData
         private void InitData()
@@ -299,12 +306,18 @@ namespace Main.Screens.Game
         #region Buttons
         private void Start_bn(object sender, RoutedEventArgs e)
         { StartCommandoList(); }
+        private void Pauze_bn(object sender, RoutedEventArgs e)
+        { PauseCommandList(); }
         private void Stop_bn(object sender, RoutedEventArgs e)
         { StopCommandList(); }
+        private void Undo_bn(object sender, RoutedEventArgs e)
+        { UndoLastCommand(); }
         private void Clear_bn(object sender, RoutedEventArgs e)
         { ClearCommandList(); }
         private void Reset_bn(object sender, RoutedEventArgs e)
         { ResetAll(); }
+        private void Speed_bn(object sender, RoutedEventArgs e)
+        { ChangeTimerSpeed(); }
         #endregion
         #region Button Functions
         #region Start
@@ -314,60 +327,33 @@ namespace Main.Screens.Game
             this.commandoTimer.Start();
             Debug.WriteLine("Timer Started");
         }
-        private void commandoTimer_Tick(object sender, EventArgs e)
+        #endregion
+        #region Pause
+        private void PauseCommandList()
         {
-            Tuple<string, AvailableCommand> action = null;
-            try
-            { action = _commandos[_commandoInteger]; }
-            catch (ArgumentOutOfRangeException) { StopCommandList(); return; }
-            if (action != null)
+            if (this._Pause_Program_bn.Content.Equals(AppSettings.Command.Resume))
             {
-                try
-                {
-                    action.Item2.Execute(this, new RoutedEventArgs());
-                    (_Commando_List.Children[_commandoInteger] as TextBlock).Foreground = new SolidColorBrush(Colors.Red);
-                    _commandoInteger++;
-                    UpdateView();
-                    CheckPosition();
-                }
-                catch (OutOfTheGameException) { StopCommandList(); ErrorMessage("Out Of The Game Error"); } // TODO: Magic cookie
-                catch (ReachedFinnishException)
-                {
-                    if (_commandos.Count == _commandoInteger)
-                    {
-                        StopCommandList();
-                        Debug.WriteLine("You have reached the finnish");
-                        CongratzMessage("You have reached the finnish"); // TODO: Magic cookie
-                        OnReturn(new ReturnEventArgs<String>("Compleet, " + _level_name)); // TODO: Magic cookie
-                    }
-                    else Debug.WriteLine("You have reached your finnish"); // TODO: Magic cookie
-                }
+                this._Pause_Program_bn.Content = AppSettings.Command.Pause;
+                Resume_Sub();
+            }
+            else if (this._Pause_Program_bn.Content.Equals(AppSettings.Command.Pause))
+            {
+                this._Pause_Program_bn.Content = AppSettings.Command.Resume;
+                Pause_Sub();
             }
         }
-        private void CheckPosition()
+        #region Subfunctions
+        private void Pause_Sub()
         {
-            if (_yourPosition.X == -2 || _yourPosition.Y == -2)
-                throw new LocationUnknownException();
-            if (_finnish.X == -2 || _finnish.Y == -2)
-                throw new LocationUnknownException();
-            int columnCount = _Field_Panel.Children.Count;
-            int rowCount = (_Field_Panel.Children[0] as StackPanel).Children.Count;
-            if (_yourPosition.X == _finnish.X && _yourPosition.Y == _finnish.Y)
-            { throw new ReachedFinnishException(); }
-            else
-            {
-                if (_yourPosition.X < 0 || _yourPosition.X >= rowCount)
-                { throw new OutOfTheGameException(); }
-                if (_yourPosition.Y < 0 || _yourPosition.Y >= columnCount)
-                { throw new OutOfTheGameException(); }
-            }
+            this.commandoTimer.Stop();
+            Debug.WriteLine("Timer Paused");
         }
-        private void ErrorMessage(string message)
-        { ShowMessage(message, "Error"); }
-        private void CongratzMessage(string message)
-        { ShowMessage(message, "Congratulations!"); }
-        private void ShowMessage(string message, string header)
-        { MessageBoxResult result = MessageBox.Show(message, header); }
+        private void Resume_Sub()
+        {
+            this.commandoTimer.Start();
+            Debug.WriteLine("Timer Resumed");
+        }
+        #endregion
         #endregion
         #region Stop
         private void StopCommandList()
@@ -376,6 +362,12 @@ namespace Main.Screens.Game
             _commandoInteger = 0;
             DefaultSettingsAfterRun();
             Debug.WriteLine("Timer Stopped");
+        }
+        #endregion
+        #region Undo
+        private void UndoLastCommand()
+        {
+            // TODO: Implementation
         }
         #endregion
         #region Clear
@@ -396,10 +388,32 @@ namespace Main.Screens.Game
         }
         private void ResetField()
         {
+            _commandoInteger = 0;
             InitData();
             InitField();
             UpdateCommandoList();
             UpdateView();
+        }
+        #endregion
+        #region Change Timer Speed
+        private void ChangeTimerSpeed()
+        {
+            if (LevelData.Get.TimerSpeed == AppSettings.Timer._Slow)
+            {
+                LevelData.Get.TimerSpeed = AppSettings.Timer._Medium;
+                _Speed_Program_bn.Content = "Medium";
+            }
+            else if (LevelData.Get.TimerSpeed == AppSettings.Timer._Medium)
+            {
+                LevelData.Get.TimerSpeed = AppSettings.Timer._Fast;
+                _Speed_Program_bn.Content = "Fast";
+            }
+            else if (LevelData.Get.TimerSpeed == AppSettings.Timer._Fast)
+            {
+                LevelData.Get.TimerSpeed = AppSettings.Timer._Slow;
+                _Speed_Program_bn.Content = "Slow";
+            }
+            this.commandoTimer.Interval = new TimeSpan(0, 0, 0, 0, LevelData.Get.TimerSpeed);
         }
         #endregion
         private void DefaultSettingsAfterRun()
@@ -471,6 +485,26 @@ namespace Main.Screens.Game
         #endregion
 
         #region Help Logic Functions
+        #region Check Position
+        private void CheckPosition()
+        {
+            if (_yourPosition.X == -2 || _yourPosition.Y == -2)
+                throw new LocationUnknownException();
+            if (_finnish.X == -2 || _finnish.Y == -2)
+                throw new LocationUnknownException();
+            int columnCount = _Field_Panel.Children.Count;
+            int rowCount = (_Field_Panel.Children[0] as StackPanel).Children.Count;
+            if (_yourPosition.X == _finnish.X && _yourPosition.Y == _finnish.Y)
+            { throw new ReachedFinnishException(); }
+            else
+            {
+                if (_yourPosition.X < 0 || _yourPosition.X >= rowCount)
+                { throw new OutOfTheGameException(); }
+                if (_yourPosition.Y < 0 || _yourPosition.Y >= columnCount)
+                { throw new OutOfTheGameException(); }
+            }
+        }
+        #endregion
 
         #region Equals Command
         private bool EqualsCommand(string task, params string[] commandos)
@@ -531,7 +565,48 @@ namespace Main.Screens.Game
         }
         #endregion
 
+        #region Timer Tick
+        private void commandoTimer_Tick(object sender, EventArgs e)
+        {
+            Tuple<string, AvailableCommand> action = null;
+            try
+            { action = _commandos[_commandoInteger]; }
+            catch (ArgumentOutOfRangeException) { StopCommandList(); return; }
+            if (action != null)
+            {
+                try
+                {
+                    action.Item2.Execute(this, new RoutedEventArgs());
+                    (_Commando_List.Children[_commandoInteger] as TextBlock).Foreground = new SolidColorBrush(Colors.Red);
+                    _commandoInteger++;
+                    UpdateView();
+                    CheckPosition();
+                }
+                catch (OutOfTheGameException) { StopCommandList(); ErrorMessage(AppSettings.Messages.UserFeedback.OutOfArea); }
+                catch (ReachedFinnishException)
+                {
+                    if (_commandos.Count == _commandoInteger)
+                    {
+                        StopCommandList();
+                        Debug.WriteLine(AppSettings.Messages.UserFeedback.ReachedFinish);
+                        CongratzMessage(AppSettings.Messages.UserFeedback.ReachedFinish);
+                        OnReturn(new ReturnEventArgs<String>(AppSettings.Command.Compleet + ", " + _level_name));
+                    }
+                    else Debug.WriteLine(AppSettings.Messages.UserFeedback.ReachedFinish);
+                }
+            }
+        }
+        private void ErrorMessage(string message)
+        { ShowMessage(message, "Error"); }
+        private void CongratzMessage(string message)
+        { ShowMessage(message, "Congratulations!"); }
+        private void ShowMessage(string message, string header)
+        { MessageBoxResult result = MessageBox.Show(message, header); }
         #endregion
+
+
+        #endregion
+
 
         #endregion
     }
