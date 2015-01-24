@@ -18,8 +18,8 @@ namespace Network
             public static Brush _Rock = new SolidColorBrush(Colors.Brown);
             public static Brush _Wall = new SolidColorBrush(Colors.Gray);
             public static Brush _Enemy1 = new SolidColorBrush(Colors.Pink);
-            public static Brush _You = new SolidColorBrush(Colors.Green);
-            public static Brush _Finnish = new SolidColorBrush(Colors.YellowGreen);
+            public static Brush _You = new SolidColorBrush(Colors.GreenYellow);
+            public static Brush _Finish = new SolidColorBrush(Colors.Gold);
             public static Brush _Unknown = new SolidColorBrush(Colors.Orange);
         }
         public class ButtonLevelColor
@@ -110,9 +110,10 @@ namespace Network
             public const string Succes = "Succes";
             public const string NoSucces = "No Succes";
         }
-        public void PageSettings(Page page)
+        public static void PageSettings(Page page)
         {
             page.ShowsNavigationUI = false;
+            page.Background = new SolidColorBrush(Colors.LightGray);
         }
     }
 }

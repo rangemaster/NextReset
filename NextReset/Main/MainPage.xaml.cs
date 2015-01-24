@@ -1,4 +1,6 @@
-﻿using Main.Screens;
+﻿using Main.Screen.Tutorial;
+using Main.Screens;
+using Network;
 using Settings.Network;
 using System;
 using System.Collections.Generic;
@@ -29,21 +31,25 @@ namespace Main
         {
             InitializeComponent();
             Init();
+            AppSettings.PageSettings(this);
         }
         private void Init()
         {
             AddButton("Start", StartPage);
+            AddButton("Tutorial", TutorialPage);
             AddButton("Settings", SettingsPage);
             AddButton("Help", HelpPage);
             AddButton("Exit", Exit);
-            AddButton("Test Connection", TestConnection);
-            AddButton("Send", SendMessage);
+            AddButton("Check for updates", Unknown);
+            AddButton("//Test Connection", TestConnection);
+            AddButton("//Send", SendMessage);
+
             Hyperlink link = new Hyperlink();
-            link.Inlines.Add("Test");
+            link.Inlines.Add("about");
             link.Click += AboutPage;
-            _About_tx.Inlines.Add("The test of the about link: ");
+            _About_tx.Inlines.Add("The game is made by Roel Suntjens. To learn more ");
             _About_tx.Inlines.Add(link);
-            _About_tx.Inlines.Add(", to see if it works");
+            _About_tx.Inlines.Add(" me, see my about page");
         }
 
         private void AddButton(string text, Action<object, RoutedEventArgs> SelectionPage)
@@ -61,8 +67,12 @@ namespace Main
         #region Buttons
         private void StartPage(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("Navigate to start page");
             StartPage page = new StartPage();
+            this.NavigationService.Navigate(page);
+        }
+        private void TutorialPage(object sender, RoutedEventArgs e)
+        {
+            TutorialPage page = new TutorialPage();
             this.NavigationService.Navigate(page);
         }
         private void SettingsPage(object sender, RoutedEventArgs e)
@@ -71,11 +81,11 @@ namespace Main
             this.NavigationService.Navigate(page);
         }
         private void HelpPage(object sender, RoutedEventArgs e)
-        { }
+        { } // TODO: Implementatie
         private void AboutPage(object sender, RoutedEventArgs e)
         {
             AboutPage page = new AboutPage();
-            this.NavigationService.Navigate(page);
+            this.NavigationService.Navigate(page); // TODO: Implementatie, Create Page
         }
         private void Unknown(object sender, RoutedEventArgs e)
         { Debug.WriteLine("Unknown"); }

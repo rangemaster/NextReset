@@ -1,5 +1,5 @@
 ﻿using Main.Screen.Admin;
-using Main.Screens.Game;
+using Main.Screen.Game;
 using Network;
 using Network.Levels;
 using Network.Singleton;
@@ -23,6 +23,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using Main.Screen.Tutorial;
 
 namespace Main.Screens
 {
@@ -34,12 +35,15 @@ namespace Main.Screens
         {
             InitializeComponent();
             Init();
-            MessageBoxResult result = MessageBox.Show("Is this your first time?", "Question", MessageBoxButton.YesNo);
-            if (result == MessageBoxResult.Yes)
-            { FirstTime(); }
         }
         private void Init()
         {
+            #region Asktimer
+            DispatcherTimer timer = new DispatcherTimer();
+            timer.Interval = new TimeSpan(0, 0, 1);
+            timer.Tick += AskFirstTime;
+            timer.Start();
+            #endregion
             #region Timer
             _clearTimer = new DispatcherTimer();
             _clearTimer.Interval = new TimeSpan(0, 0, 2);
@@ -49,6 +53,14 @@ namespace Main.Screens
             LevelData data = LevelData.Get;
             LoadLevels();
             UpdateLevelButtons();
+        }
+        private void AskFirstTime(object sender, EventArgs e)
+        {
+            MessageBoxResult result = MessageBox.Show("Is this your first time?", "Question", MessageBoxButton.YesNo);
+            if (result == MessageBoxResult.Yes)
+            { FirstTime(); }
+            DispatcherTimer timer = sender as DispatcherTimer;
+            timer.Stop();
         }
 
         #region Update
@@ -261,7 +273,20 @@ namespace Main.Screens
 
         private void FirstTime()
         {
-            Debug.WriteLine("First time"); 
+            Debug.WriteLine("First time");
+            TutorialPage page = new TutorialPage();
+            page.Return += Tutorial_Return;
+            //AppSettings.PageSettings(page);
+            this.NavigationService.Navigate(page);
+        }
+        private void Tutorial_Return(object sender, ReturnEventArgs<string> e)
+        {
+            string result = e.Result;
+            if (result.Equals(AppSettings.Return.Succes))
+            { }
+            else if (result.Equals(AppSettings.Return.NoSucces))
+            { }
+            else { throw new NotSupportedException(); }
         }
     }
 }

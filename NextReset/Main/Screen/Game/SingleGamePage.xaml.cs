@@ -20,7 +20,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
-namespace Main.Screens.Game
+namespace Main.Screen.Game
 {
     public partial class SingleGamePage : PageFunction<String>
     {
@@ -295,7 +295,7 @@ namespace Main.Screens.Game
                 case AppSettings.Field._Wall: return AppSettings.Color._Wall;
                 case AppSettings.Field._Enemy1: return AppSettings.Color._Enemy1;
                 case AppSettings.Field._You: return AppSettings.Color._You;
-                case AppSettings.Field._Finnish: return AppSettings.Color._Finnish;
+                case AppSettings.Field._Finnish: return AppSettings.Color._Finish;
                 case AppSettings.Field._Path: return AppSettings.Color._Path;
                 default: return AppSettings.Color._Unknown;
             }
