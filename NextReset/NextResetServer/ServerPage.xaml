@@ -1,4 +1,4 @@
-﻿<Window x:Class="NextResetServer.MainWindow"
+﻿<Page x:Class="NextResetServer.ServerPage"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Server - Main" Height="600" Width="600">
@@ -34,4 +34,4 @@
             </Grid>
         </Grid>
     </Grid>
-</Window>
+</Page>

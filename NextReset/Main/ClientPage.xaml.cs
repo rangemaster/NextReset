@@ -24,10 +24,10 @@ namespace Main
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainPage : Page
+    public partial class ClientPage : Page
     {
         private NetworkClient client;
-        public MainPage()
+        public ClientPage()
         {
             InitializeComponent();
             Init();
@@ -103,7 +103,7 @@ namespace Main
         private void SendMessage(object sender, RoutedEventArgs e)
         {
             if (client != null)
-                client.SendMessage("Test message from client");
+                client.SendMessage("Roel");
         }
         #endregion
 

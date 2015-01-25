@@ -23,26 +23,46 @@ namespace NextResetServer
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class ServerPage : Page
     {
+        private List<string> _NewOutputLines = null;
+        private List<string> _OldOutputLines = null;
+        private DispatcherTimer _OutputTimer = null;
         private NetworkListener server;
         private Thread ReceiveThread = null;
-        private Dictionary<string, Socket> clients = null;
-        public MainWindow()
+        public ServerPage()
         {
             InitializeComponent();
             _Output_tx.Text = "";
-            for (int i = 1; i <= 20; i++)
-            { Output("Test: " + i); }
             server = new NetworkListener();
         }
         private void Output(string message)
         {
             Debug.WriteLine("Output: " + message);
-            //this.Dispatcher.BeginInvoke(Output(message), this);
             _Output_tx.Text += message + "\n";
         }
-
+        private int Peek()
+        { return _NewOutputLines.Count > 0 ? 1 : -1; }
+        private void StartOutputTimer()
+        {
+            if (_OutputTimer == null)
+            {
+                _OutputTimer = new DispatcherTimer();
+                _OutputTimer.Interval = new TimeSpan(0, 0, 5);
+                _OutputTimer.Tick += OutputTimer_Tick;
+                _OutputTimer.Start();
+            }
+        }
+        private void OutputTimer_Tick(object sender, EventArgs e)
+        {
+            while (Peek() >= 0)
+            {
+                string line = _NewOutputLines[0];
+                _NewOutputLines.RemoveAt(0);
+                Output(line);
+                _OldOutputLines.Add(line);
+            }
+        }
         private void _Start_bn_Click(object sender, RoutedEventArgs e)
         {
             server.Start();
@@ -53,18 +73,26 @@ namespace NextResetServer
             server.Stop();
             StopReceiving();
         }
+
+        #region Reading Thread
         private void InitReceiveThread()
         {
             this.ReceiveThread = new Thread(() =>
             {
                 while (true)
                 {
-                    Debug.WriteLine("Waiting for client");
                     TcpClient client = server.AcceptTcpClient();
-                    Debug.WriteLine("Server: Accept");
-                    NetworkPackage package = server.RecievePackage(client);
-
-                    Output(package.message);
+                    string name = NetworkListener.RecievePackage(client).message;
+                    Debug.WriteLine("Message: " + name);
+                    server.AddTcpClient(name, client);
+                    new Thread(() =>
+                    {
+                        ClientHandler handler = new ClientHandler(server, name, client);
+                        while (true)
+                        {
+                            handler.handle();
+                        }
+                    }).Start();
                 }
             });
         }
@@ -87,5 +115,6 @@ namespace NextResetServer
                 Debug.WriteLine("Stopped Receiving");
             }
         }
+        #endregion
     }
 }
