@@ -96,6 +96,39 @@ namespace Settings
                 }
             }
         }
+        #region Version
+        public static string LoadVersion()
+        {
+            string location = AppSettings.SaveOrLoad._Level_Source_Location;
+            string file = "Version.reset"; // TODO: Magic cookie
+            if (!Directory.Exists(location))
+            { Directory.CreateDirectory(location); }
+            if (!File.Exists(location + "/" + file))
+            { using (StreamWriter writer = new StreamWriter(location + "/" + file)) { writer.WriteLine("Version: 1.0"); } }
+            using (StreamReader reader = new StreamReader(location + "/" + file))
+            { return reader.ReadLine(); }
+        }
+        public static int CompareVersion(string ServerVersion, string ClientVersion)
+        {
+            Debug.WriteLine("Compare Version: " + ServerVersion + " <-> " + ClientVersion);
+            string[] ServerArray = ServerVersion.Split(':');
+            string[] ClientArray = ClientVersion.Split(':');
+            string[] ServerVersionArray = ServerArray[1].Split('.');
+            string[] ClientVersionArray = ClientArray[1].Split('.');
+            for (int i = 0; i < ServerVersionArray.Length && i < ClientVersionArray.Length; i++)
+            {
+                int sv = int.Parse(ServerVersionArray[i]);
+                int cv = int.Parse(ClientVersionArray[i]);
+                Debug.WriteLine("Compare Version: " + sv + " <-> " + cv);
+                if (sv < cv)
+                { return 1; }
+                else if (cv < sv)
+                { return -1; }
+            }
+            Debug.WriteLine("Versions are the same!");
+            return 0;
+        }
+        #endregion
         #endregion
 
         #region Line Editing

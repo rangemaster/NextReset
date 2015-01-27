@@ -51,9 +51,15 @@
     <Compile Include="Container\DelegateCommand.cs" />
     <Compile Include="GameController.cs" />
     <Compile Include="Levels\ReaderLevel.cs" />
+    <Compile Include="Network\Handlers\Client\CHandler.cs" />
+    <Compile Include="Network\Handlers\Client\RequestResponse.cs" />
+    <Compile Include="Network\Handlers\Server\CheckVersion.cs" />
+    <Compile Include="Network\Handlers\Server\SHandler.cs" />
+    <Compile Include="Network\Handlers\Server\NewRequestHandler.cs" />
     <Compile Include="Network\NetworkClient.cs" />
     <Compile Include="Network\NetworkListener.cs" />
     <Compile Include="Network\NetworkPackage.cs" />
+    <Compile Include="Network\NetworkSettings.cs" />
     <Compile Include="Singleton\LevelData.cs" />
     <Compile Include="ThrowableException\LevelNotFoundException.cs" />
     <Compile Include="ThrowableException\LevelUnstartubleException.cs" />

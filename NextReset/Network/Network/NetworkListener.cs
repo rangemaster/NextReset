@@ -45,6 +45,8 @@ namespace Settings.Network
         }
         public void AddTcpClient(string Key, TcpClient Client)
         { this.clients.Add(Key, Client); }
+        public TcpClient GetTcpClient(string Key)
+        { return this.clients[Key]; }
         public static NetworkPackage RecievePackage(TcpClient client)
         {
             try
@@ -54,6 +56,7 @@ namespace Settings.Network
                 return package;
             }
             catch (IOException) { throw new IOException(); }
+            catch (InvalidOperationException) { return null; }
         }
         public static void SendPackage(TcpClient client, NetworkPackage package)
         {

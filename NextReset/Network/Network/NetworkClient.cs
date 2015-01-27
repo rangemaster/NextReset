@@ -24,16 +24,16 @@ namespace Settings.Network
         public void SendMessage(string message)
         {
             NetworkPackage package = new NetworkPackage();
-            package.message = message;
+            package.Message = message;
             Send(package);
         }
-        public string ResieveMessage() { return Recieve().message; }
-        private void Send(NetworkPackage package)
+        public string ResieveMessage() { return Receive().Message; }
+        public void Send(NetworkPackage package)
         {
             BinaryFormatter formatter = new BinaryFormatter();
             formatter.Serialize(client.GetStream(), package);
         }
-        private NetworkPackage Recieve()
+        public NetworkPackage Receive()
         {
             BinaryFormatter formatter = new BinaryFormatter();
             NetworkPackage package = (NetworkPackage)formatter.Deserialize(client.GetStream());

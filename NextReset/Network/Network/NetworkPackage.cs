@@ -11,22 +11,32 @@ namespace Settings.Network
     [Serializable()]
     public class NetworkPackage : ISerializable
     {
-        public string message { get; set; }
+        public int ExecuteCode { get; set; }
+        public int Value { get; set; }
+        public string Message { get; set; }
+        public List<string> Data { get; set; }
         public NetworkPackage()
         {
-            message = null;
+            ExecuteCode = -1;
+            Value = -2;
+            Message = null;
+            Data = null;
         }
         public NetworkPackage(SerializationInfo info, StreamingContext context)
             : base()
         {
-            message = (string)info.GetString("message");
-            Debug.WriteLine("Loading message: " + message);
+            ExecuteCode = info.GetInt32("Code");
+            Value = (int)info.GetInt16("Value");
+            Message = (string)info.GetString("Message");
+            Data = (List<string>)info.GetValue("Payload", typeof(List<string>));
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            Debug.WriteLine("Saving message: " + message);
-            info.AddValue("message", message);
+            info.AddValue("Code", ExecuteCode);
+            info.AddValue("Value", Value);
+            info.AddValue("Message", Message);
+            info.AddValue("Payload", Data);
         }
     }
 }
