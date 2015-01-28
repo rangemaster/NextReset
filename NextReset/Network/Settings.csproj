@@ -57,7 +57,6 @@
     <Compile Include="Network\Handlers\Server\SHandler.cs" />
     <Compile Include="Network\Handlers\Server\NewRequestHandler.cs" />
     <Compile Include="Network\Handlers\Server\UpdateRequestHandler.cs" />
-    <Compile Include="Network\LevelsContainer.cs" />
     <Compile Include="Network\NetworkClient.cs" />
     <Compile Include="Network\NetworkListener.cs" />
     <Compile Include="Network\NetworkPackage.cs" />

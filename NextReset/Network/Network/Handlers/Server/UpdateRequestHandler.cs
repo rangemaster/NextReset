@@ -15,22 +15,39 @@ namespace Settings.Network.Handlers.Server
     {
         public void Handle(NetworkListener server, TcpClient client, NetworkPackage package)
         {
-            List<Tuple<List<string>, string>> levels = new List<Tuple<List<string>, string>>();
-
+            // TODO: Update available questions set off button. So there will be no confict when changing the files
+            List<Tuple<List<string>, string>> data = new List<Tuple<List<string>, string>>();
             List<string> patches = LoadPatches();
             foreach (string patch in patches)
             {
-                levels.Add(CreateLevel(LoadPatch(patch), patch));
+                try
+                {
+                    List<string> list = LoadPatch(patch);
+                    data.Add(CreateLevel(list, patch));
+                }
+                catch (FileNotFoundException) { Debug.WriteLine("Patch not fount [" + patch + "]"); }
             }
-
+            string version = null;
+            using (StreamReader reader = new StreamReader(AppSettings.SaveOrLoad._Level_Source_Location + "/" + "Version.reset"))
+            { version = reader.ReadLine(); }
 
             Debug.WriteLine("Sending Update Data");
             NetworkPackage SendPackage = new NetworkPackage();
             SendPackage.ExecuteCode = (int)(NetworkSettings.ExecuteCode.update_response);
-            LevelsContainer container = new LevelsContainer();
-            container.Levels = levels;
+            SendPackage.Message = version;
+            SendPackage.Data = data;
+            Debug.WriteLine("Debugging list");
+            for (int i = 0; i < SendPackage.Data.Count; i++)
+            {
+                for (int j = 0; j < SendPackage.Data[i].Item1.Count; j++)
+                {
+                    Debug.WriteLine("Sending: " + SendPackage.Data[i].Item1[j]);
+                }
+            }
             NetworkListener.SendPackage(client, SendPackage);
         }
+        //private List<string> CreateLevel(List<string> lines, string patchname)
+        //{ return lines; }
         private Tuple<List<string>, string> CreateLevel(List<string> lines, string patchname)
         { return new Tuple<List<string>, string>(lines, patchname); }
         private List<string> LoadPatches()
@@ -39,21 +56,34 @@ namespace Settings.Network.Handlers.Server
             string file = AppSettings.SaveOrLoad._Level_Source_Filename;
             if (!Directory.Exists(location))
             { Directory.CreateDirectory(location); }
-            if (!File.Exists(file))
-            { using (StreamWriter writer = new StreamWriter(location + "/" + file)) { writer.WriteLine("Starters.reset"); }}
+            if (!File.Exists(location + "/" + file))
+            { using (StreamWriter writer = new StreamWriter(location + "/" + file)) { writer.WriteLine("Starters.reset"); } }
 
-            List<string> patches = new List<string>();
+            List<string> list_patches = new List<string>();
             using (StreamReader reader = new StreamReader(location + "/" + file))
             {
                 while (reader.Peek() >= 0)
-                { patches.Add(reader.ReadLine()); }
+                {
+                    string line = reader.ReadLine();
+                    list_patches.Add(line);
+                }
             }
-            return patches;
+            return list_patches;
         }
         private List<string> LoadPatch(string patch)
         {
             GameController.CreateExample();
-            return null;
+            string location = AppSettings.SaveOrLoad._Level_Source_Location;
+            List<string> list_patch = new List<string>();
+            using (StreamReader reader = new StreamReader(location + "/" + patch))
+            {
+                while (reader.Peek() >= 0)
+                {
+                    string line = reader.ReadLine();
+                    list_patch.Add(line);
+                }
+            }
+            return list_patch;
         }
     }
 }

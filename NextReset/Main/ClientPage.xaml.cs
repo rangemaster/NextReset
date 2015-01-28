@@ -7,6 +7,7 @@ using Settings.Network.Handlers.Client;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
@@ -117,8 +118,8 @@ namespace Main
                     NetworkPackage sendPackage = new NetworkPackage();
                     sendPackage.ExecuteCode = (int)NetworkSettings.ExecuteCode.update_request;
                     client.Send(sendPackage);
-                    Debug.WriteLine("Not waiting anymore");
                     WaitForResponseUpdate(client);
+                    Debug.WriteLine("Not waiting anymore");
                 }
             }
             else
@@ -179,7 +180,36 @@ namespace Main
         public void HandleUpdate(NetworkPackage package)
         {
             // TODO: Implementation
-            MessageBox.Show("Waiting for finishing update");
+
+            for (int i = 0; i < package.Data.Count; i++)
+            {
+                Debug.WriteLine("--- " + package.Data[i].Item2 + " ---");
+                foreach (string line in package.Data[i].Item1)
+                    Debug.WriteLine("Received: " + line);
+            }
+            string location = AppSettings.SaveOrLoad._Level_Source_Location;
+            string file1 = AppSettings.SaveOrLoad._Level_Source_Filename;
+            using (StreamWriter writer = new StreamWriter(location + "/" + "Version.reset"))
+            {
+                writer.WriteLine(package.Message);
+            }
+            using (StreamWriter writer = new StreamWriter(location + "/" + file1))
+            {
+                for (int i = 0; i < package.Data.Count; i++)
+                {
+                    writer.WriteLine(package.Data[i].Item2);
+                }
+            }
+            foreach (Tuple<List<string>, string> datapack in package.Data)
+            {
+                using (StreamWriter writer2 = new StreamWriter(location + "/" + datapack.Item2))
+                {
+                    foreach (string line in datapack.Item1)
+                    {
+                        writer2.WriteLine(line);
+                    }
+                }
+            }
         }
         #endregion
         private void SaveSettings() { }

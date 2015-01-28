@@ -104,7 +104,7 @@ namespace Settings
             if (!Directory.Exists(location))
             { Directory.CreateDirectory(location); }
             if (!File.Exists(location + "/" + file))
-            { using (StreamWriter writer = new StreamWriter(location + "/" + file)) { writer.WriteLine("Version: 1.0"); } }
+            { using (StreamWriter writer = new StreamWriter(location + "/" + file)) { writer.WriteLine("Version: 1.00.00"); } }
             using (StreamReader reader = new StreamReader(location + "/" + file))
             { return reader.ReadLine(); }
         }
