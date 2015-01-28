@@ -47,8 +47,6 @@ namespace Main
             AddButton("Help", HelpPage);
             AddButton("Exit", Exit);
             AddButton("Check for updates", CheckForUpdates);
-            AddButton("//Test Connection", TestConnection);
-            AddButton("//Send", SendMessage);
 
             Hyperlink link = new Hyperlink();
             link.Inlines.Add("about");
@@ -103,26 +101,6 @@ namespace Main
         }
         private void CheckForUpdates(object sender, RoutedEventArgs e)
         { UpdateCheck(); }
-        private void TestConnection(object sender, RoutedEventArgs e)
-        {
-            if (client == null)
-            {
-                client = new NetworkClient();
-                client.Connect();
-                client.SendMessage("Roel");
-            }
-        }
-        private void SendMessage(object sender, RoutedEventArgs e)
-        {
-            if (client != null)
-            {
-                //client.SendMessage("Roel");
-                NetworkPackage package = new NetworkPackage();
-                package.Data = new List<string>();
-                package.Data.Add("Test Level"); // TODO: Send levels
-                client.Send(package);
-            }
-        }
         #endregion
 
         #region Functions
@@ -139,12 +117,10 @@ namespace Main
                     NetworkPackage sendPackage = new NetworkPackage();
                     sendPackage.ExecuteCode = (int)NetworkSettings.ExecuteCode.update_request;
                     client.Send(sendPackage);
-                    NetworkPackage returnPackage = client.Receive();
-                    if (returnPackage.ExecuteCode == (int)NetworkSettings.ExecuteCode.update_response)
-                    { HandleUpdate(returnPackage); }
-                    else { Debug.WriteLine("Server send wrong package [Execute code: [" + returnPackage.ExecuteCode + "]"); }
+                    Debug.WriteLine("Not waiting anymore");
+                    WaitForResponseUpdate(client);
                 }
-            } // TODO: Implementation (Ended)
+            }
             else
             { MessageBox.Show("No Updates Available"); }
         }
@@ -182,7 +158,21 @@ namespace Main
                     available = false;
                 }
             }
+            else { Debug.WriteLine("Update Available Check, Wrong package send [" + returnPackage.ExecuteCode + "]"); return false; }
             return available;
+        }
+        #endregion
+        #region Wait for response update
+        private void WaitForResponseUpdate(NetworkClient client)
+        {
+            Debug.WriteLine("Waiting for return package");
+            NetworkPackage returnPackage = client.Receive();
+            if (returnPackage.ExecuteCode == (int)NetworkSettings.ExecuteCode.update_response)
+            {
+                Debug.WriteLine("Received levels from server");
+                HandleUpdate(returnPackage); // TODO: Implementation (Ended)
+            }
+            else { Debug.WriteLine("Server send wrong package [" + returnPackage.ExecuteCode + "]"); }
         }
         #endregion
         #region Handle Update

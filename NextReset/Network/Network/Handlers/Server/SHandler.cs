@@ -5,7 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Settings.Network.Server.Handlers
+namespace Settings.Network.Handlers.Server
 {
     public interface SHandler
     {

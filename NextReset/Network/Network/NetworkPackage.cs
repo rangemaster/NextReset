@@ -11,12 +11,14 @@ namespace Settings.Network
     [Serializable()]
     public class NetworkPackage : ISerializable
     {
+        public LevelsContainer Container { get; set; }
         public int ExecuteCode { get; set; }
         public int Value { get; set; }
         public string Message { get; set; }
         public List<string> Data { get; set; }
         public NetworkPackage()
         {
+            Container = null;
             ExecuteCode = -1;
             Value = -2;
             Message = null;
@@ -25,6 +27,7 @@ namespace Settings.Network
         public NetworkPackage(SerializationInfo info, StreamingContext context)
             : base()
         {
+            Container = (LevelsContainer)info.GetValue("Container", typeof(LevelsContainer));
             ExecuteCode = info.GetInt32("Code");
             Value = (int)info.GetInt16("Value");
             Message = (string)info.GetString("Message");
@@ -33,6 +36,7 @@ namespace Settings.Network
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
+            info.AddValue("Container", Container);
             info.AddValue("Code", ExecuteCode);
             info.AddValue("Value", Value);
             info.AddValue("Message", Message);

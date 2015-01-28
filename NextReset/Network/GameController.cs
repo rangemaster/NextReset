@@ -13,8 +13,8 @@ namespace Settings
 {
     public class GameController
     {
-        private string sourceLocation = AppSettings.SaveOrLoad._Level_Source_Location;
-        private string sourceFilename = AppSettings.SaveOrLoad._Level_Source_Filename;
+        private static string sourceLocation = AppSettings.SaveOrLoad._Level_Source_Location;
+        private static string sourceFilename = AppSettings.SaveOrLoad._Level_Source_Filename;
         private Dictionary<string, ILevel> _levels = null;
         private List<string> _Patches = null;
         private bool readingPath = false;
@@ -111,20 +111,25 @@ namespace Settings
         public static int CompareVersion(string ServerVersion, string ClientVersion)
         {
             Debug.WriteLine("Compare Version: " + ServerVersion + " <-> " + ClientVersion);
-            string[] ServerArray = ServerVersion.Split(':');
-            string[] ClientArray = ClientVersion.Split(':');
-            string[] ServerVersionArray = ServerArray[1].Split('.');
-            string[] ClientVersionArray = ClientArray[1].Split('.');
-            for (int i = 0; i < ServerVersionArray.Length && i < ClientVersionArray.Length; i++)
+            try
             {
-                int sv = int.Parse(ServerVersionArray[i]);
-                int cv = int.Parse(ClientVersionArray[i]);
-                Debug.WriteLine("Compare Version: " + sv + " <-> " + cv);
-                if (sv < cv)
-                { return 1; }
-                else if (cv < sv)
-                { return -1; }
+                string[] ServerArray = ServerVersion.Split(':');
+                string[] ClientArray = ClientVersion.Split(':');
+                string[] ServerVersionArray = ServerArray[1].Split('.');
+                string[] ClientVersionArray = ClientArray[1].Split('.');
+                for (int i = 0; i < ServerVersionArray.Length && i < ClientVersionArray.Length; i++)
+                {
+                    int sv = int.Parse(ServerVersionArray[i]);
+                    int cv = int.Parse(ClientVersionArray[i]);
+                    Debug.WriteLine("Compare Version: " + sv + " <-> " + cv);
+                    if (sv < cv)
+                    { return 1; }
+                    else if (cv < sv)
+                    { return -1; }
+                }
             }
+            catch (IndexOutOfRangeException) { }
+            catch (NullReferenceException) { }
             Debug.WriteLine("Versions are the same!");
             return 0;
         }
@@ -204,12 +209,12 @@ namespace Settings
 
         #region Create
 
-        private void CreateDirectory()
+        public static void CreateDirectory()
         {
             Directory.CreateDirectory(sourceLocation);
             CreateExample();
         }
-        private void CreateExample()
+        public static void CreateExample()
         {
             string filename = "Starters.reset";
             using (StreamWriter write = new StreamWriter(sourceLocation + "/" + filename.Substring(0, filename.Length - 5) + ".txt", false))

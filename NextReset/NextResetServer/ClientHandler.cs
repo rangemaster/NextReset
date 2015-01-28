@@ -36,6 +36,7 @@ namespace NextResetServer
             try
             {
                 NetworkPackage package = NetworkListener.RecievePackage(_client);
+                _page.AddOutput("Package [" + package.ExecuteCode + "]");
                 try
                 { Handlers[package.ExecuteCode].Handle(_server, _client, package); }
                 catch (NullReferenceException) { _page.AddOutput("Client [" + _name + "] Left"); return false; }
@@ -50,7 +51,8 @@ namespace NextResetServer
             {
                 Handlers = new Dictionary<int, SHandler>();
                 Handlers.Add((int)NetworkSettings.ExecuteCode.execute_request, new NewRequestHandler());
-                Handlers.Add((int)NetworkSettings.ExecuteCode.update_available_check, new CheckVersion());
+                Handlers.Add((int)NetworkSettings.ExecuteCode.update_available_check, new CheckVersionHandler());
+                Handlers.Add((int)NetworkSettings.ExecuteCode.update_request, new UpdateRequestHandler());
             }
         }
     }

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Settings.Network.Handlers.Server
 {
-    public class CheckVersion : SHandler
+    public class CheckVersionHandler : SHandler
     {
         public void Handle(NetworkListener server, TcpClient client, NetworkPackage package)
         {
