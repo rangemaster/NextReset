@@ -15,9 +15,9 @@ namespace Settings.Network
         public int Value { get; set; }
         public string Message { get; set; }
         public List<Tuple<List<string>, string>> Data { get; set; }
-        public NetworkPackage()
+        public NetworkPackage(int execute_code)
         {
-            ExecuteCode = -1;
+            ExecuteCode = execute_code;
             Value = -2;
             Message = "";
             Data = new List<Tuple<List<string>, string>>();

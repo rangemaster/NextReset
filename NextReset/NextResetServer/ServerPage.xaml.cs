@@ -75,24 +75,27 @@ namespace NextResetServer
             while (Peek() >= 0)
             {
                 Debug.WriteLine("Peek");
-                for (int i = 0; i < ServerData.Get.OutputLines.Count; i++)
+                for (int i = 0; i < ServerData.Get.GetOutputLines().Count; i++)
                 {
-                    Debug.WriteLine("Output Line: " + ServerData.Get.OutputLines[i]);
-                    _NewOutputLines.Add(ServerData.Get.OutputLines[i]);
+                    Debug.WriteLine("Output Line: " + ServerData.Get.GetOutputLines()[i]);
+                    _NewOutputLines.Add(ServerData.Get.GetOutputLines()[i]);
                 }
-                ServerData.Get.OutputLines.Clear();
+                ServerData.Get.GetOutputLines().Clear();
                 string line = _NewOutputLines[0];
                 _NewOutputLines.RemoveAt(0);
                 Output(line);
                 _OldOutputLines.Add(line);
             }
         }
+        #region Buttons
         private void _Start_bn_Click(object sender, RoutedEventArgs e)
         {
             server.Start();
             StartReceiving();
             _Start_bn.IsEnabled = false;
             _Stop_bn.IsEnabled = true;
+            ServerData.Get.IsUpdatable = false;
+            _Updatable_bn_Click(sender, e);
         }
         private void _Stop_bn_Click(object sender, RoutedEventArgs e)
         {
@@ -100,8 +103,23 @@ namespace NextResetServer
             StopReceiving();
             _Stop_bn.IsEnabled = false;
             _Start_bn.IsEnabled = true;
+            ServerData.Get.IsUpdatable = false;
         }
-
+        private void _Updatable_bn_Click(object sender, RoutedEventArgs e)
+        {
+            if (ServerData.Get.IsUpdatable)
+            {
+                _Updatable_bn.Background = AppSettings.ServerSettings.Buttons._InActive;
+                ServerData.Get.IsUpdatable = false;
+            }
+            else
+            {
+                _Updatable_bn.Background = AppSettings.ServerSettings.Buttons._Active;
+                ServerData.Get.IsUpdatable = true;
+            }
+            Debug.WriteLine("Updatable: " + ServerData.Get.IsUpdatable);
+        }
+        #endregion
         #region Reading Thread
         private void InitReceiveThread()
         {

@@ -10,8 +10,8 @@ namespace Settings.Network
     {
         public class Address
         {
-            public const string IP_Address = "127.0.0.1"; // TODO: Implement in code
-            public const int Server_Port = 7999; // TODO: Implement in code
+            public const string IP_Address = "127.0.0.1";
+            public const int Server_Port = 7999;
         }
         public enum ExecuteCode
         {
@@ -25,6 +25,8 @@ namespace Settings.Network
             update_response,
             login_request,
             login_response,
+            create_account_request,
+            create_account_response,
         }
         public class Error
         {

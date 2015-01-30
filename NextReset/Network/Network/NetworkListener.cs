@@ -23,7 +23,7 @@ namespace Settings.Network
         {
             if (listener == null)
             {
-                this.listener = new TcpListener(7999); // TODO: Magic cookie
+                this.listener = new TcpListener(NetworkSettings.Address.Server_Port);
                 this.listener.Start();
             }
         }

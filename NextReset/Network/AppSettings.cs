@@ -49,6 +49,19 @@ namespace Network
             public const string _Attack = "Attack";
             public const string _Bomb = "Bomb";
         }
+        public sealed class Login
+        {
+            public const string _Username_tx = "Username:";
+            public const string _Password_tx = "Password:";
+            public static Brush _Username_label_brush = new SolidColorBrush(Colors.Green);
+            public static Brush _Username_tb_brush = new SolidColorBrush(Colors.Black);
+            public static Brush _Password_label_brush = new SolidColorBrush(Colors.Green);
+            public static Brush _Password_tb_brush = new SolidColorBrush(Colors.Black);
+            public static Brush _Feedback_tb_brush = new SolidColorBrush(Colors.Magenta);
+            public const string _LoginData = "Login Data";
+            public const string _LoginWrong = "Username or password wrong";
+            public const string _LoginFailed = "Login Failed";
+        }
         public sealed class Messages
         {
             public sealed class Errors
@@ -72,6 +85,31 @@ namespace Network
                 public const string AdminChanges = "Good luck with these changes";
             }
         }
+        public sealed class MessageBox
+        {
+            public sealed class StartPage_Admin
+            {
+                public const string _Line = "You want to continue";
+                public const string _Title = "Admin";
+            }
+            public sealed class UpdateCheck
+            {
+                public const string _Line = "You want to get the update?";
+                public const string _Title = "Up - To - Date";
+                public const string _No_Update = "No Update Available";
+            }
+            public sealed class FirstTime
+            {
+                public const string _Line = "Is this your first time?";
+                public const string _Title = "Question";
+            }
+            public sealed class Confirmation
+            {
+                public const string _User = "User";
+                public const string _Pass = "Pass";
+                public const string _Confirm = "Correct?";
+            }
+        }
         public sealed class Seperate
         {
             public const string LvlName = "Level name:";
@@ -88,6 +126,8 @@ namespace Network
             public const string _State_Filename = "State.reset";
             public const string _Level_Source_Location = "GameData";
             public const string _Level_Source_Filename = "GameData.reset";
+            public const string _Version_Filename = "Version.reset";
+            public const string _Version_Default = "Version: 1.0.0";
         }
         public sealed class Timer
         {
@@ -109,6 +149,14 @@ namespace Network
         {
             public const string Succes = "Succes";
             public const string NoSucces = "No Succes";
+        }
+        public sealed class ServerSettings
+        {
+            public sealed class Buttons
+            {
+                public static Brush _Active = new SolidColorBrush(Colors.LightGreen);
+                public static Brush _InActive = new SolidColorBrush(Colors.Salmon);
+            }
         }
         public static void PageSettings(Page page)
         {

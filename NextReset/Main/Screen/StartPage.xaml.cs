@@ -29,7 +29,6 @@ namespace Main.Screens
 {
     public partial class StartPage : Page
     {
-        // TODO: Message First time?
         private DispatcherTimer _clearTimer;
         public StartPage()
         {
@@ -56,7 +55,7 @@ namespace Main.Screens
         }
         private void AskFirstTime(object sender, EventArgs e)
         {
-            MessageBoxResult result = MessageBox.Show("Is this your first time?", "Question", MessageBoxButton.YesNo);
+            MessageBoxResult result = MessageBox.Show(AppSettings.MessageBox.FirstTime._Line, AppSettings.MessageBox.FirstTime._Title, MessageBoxButton.YesNo);
             if (result == MessageBoxResult.Yes)
             { FirstTime(); }
             DispatcherTimer timer = sender as DispatcherTimer;
@@ -237,7 +236,7 @@ namespace Main.Screens
         #region navigation handling
         private void ExecuteTopRect()
         {
-            MessageBoxResult result = MessageBox.Show("You want to continue", "Admin", MessageBoxButton.YesNo); // TODO: Magic cookie
+            MessageBoxResult result = MessageBox.Show(AppSettings.MessageBox.StartPage_Admin._Line, AppSettings.MessageBox.StartPage_Admin._Title, MessageBoxButton.YesNo);
             if (result == MessageBoxResult.Yes)
             {
                 AdminPage page = new AdminPage();
@@ -287,6 +286,12 @@ namespace Main.Screens
             else if (result.Equals(AppSettings.Return.NoSucces))
             { }
             else { throw new NotSupportedException(); }
+        }
+
+        private void _Back_bn_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.NavigationService.CanGoBack)
+                this.NavigationService.GoBack();
         }
     }
 }

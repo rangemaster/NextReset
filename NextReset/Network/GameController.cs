@@ -100,11 +100,11 @@ namespace Settings
         public static string LoadVersion()
         {
             string location = AppSettings.SaveOrLoad._Level_Source_Location;
-            string file = "Version.reset"; // TODO: Magic cookie
+            string file = AppSettings.SaveOrLoad._Version_Filename;
             if (!Directory.Exists(location))
             { Directory.CreateDirectory(location); }
             if (!File.Exists(location + "/" + file))
-            { using (StreamWriter writer = new StreamWriter(location + "/" + file)) { writer.WriteLine("Version: 1.00.00"); } }
+            { using (StreamWriter writer = new StreamWriter(location + "/" + file)) { writer.WriteLine(AppSettings.SaveOrLoad._Version_Default); } }
             using (StreamReader reader = new StreamReader(location + "/" + file))
             { return reader.ReadLine(); }
         }

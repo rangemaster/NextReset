@@ -1,4 +1,5 @@
-﻿using Settings.Singleton;
+﻿using Network;
+using Settings.Singleton;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,14 +18,13 @@ namespace Settings.Network.Handlers.Server
             int Value = -1;
             if (ServerData.Get._Accounts == null)
             { ServerData.Get.Reload(); }
-            if (package.Data[0].Item2.Equals("Login Data")) // Magic cookie
+            if (package.Data[0].Item2.Equals(AppSettings.Login._LoginData))
             {
                 string username = package.Data[0].Item1[0];
                 string password = package.Data[0].Item1[1];
                 Value = ServerData.Get.ContainsAccount(username, password);
             }
-            NetworkPackage ReturnPackage = new NetworkPackage(); // TODO: NetworkPackage Constructor (int executecode)
-            ReturnPackage.ExecuteCode = (int)NetworkSettings.ExecuteCode.login_response;
+            NetworkPackage ReturnPackage = new NetworkPackage((int)NetworkSettings.ExecuteCode.login_response);
             ReturnPackage.Value = Value;
             NetworkListener.SendPackage(client, ReturnPackage);
             Debug.WriteLine("Server: Login Package Send");

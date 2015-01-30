@@ -17,7 +17,8 @@ namespace Settings.Singleton
         private string account_list = "AccountData.reset";
         private string black_list = "BlackData.reset";
         private string white_list = "WhiteData.reset";
-        public List<string> OutputLines { get; private set; }
+        private List<string> OutputLines;
+        public bool IsUpdatable { get; set; }
         public Dictionary<string, string> _Accounts { get; set; }
         public List<string> _WhiteList { get; private set; }
         public List<string> _BlackList { get; private set; }
@@ -101,28 +102,28 @@ namespace Settings.Singleton
         private void CreateSubDictionary()
         {
             Directory.CreateDirectory(AppSettings.SaveOrLoad._Level_Source_Location);
-            OutputLines.Add(Time() + " Directory [" + AppSettings.SaveOrLoad._Level_Source_Location + "] has been created");
+            AddOutputLine("Directory [" + AppSettings.SaveOrLoad._Level_Source_Location + "] has been created");
         }
         private void CreateDictionary()
         {
             Directory.CreateDirectory(location);
-            OutputLines.Add(Time() + " Directory [" + location + "] has been created");
+            AddOutputLine("Directory [" + location + "] has been created");
         }
         private void CreateAccountList()
         {
             using (StreamWriter writer = new StreamWriter(location + "/" + account_list))
             { writer.WriteLine("admin - admin"); }
-            OutputLines.Add(Time() + " File [" + location + "/" + account_list + "] has been created");
+            AddOutputLine("File [" + location + "/" + account_list + "] has been created");
         }
         private void CreateBlackList()
         {
             using (StreamWriter writer = new StreamWriter(location + "/" + black_list)) { writer.WriteLine(""); }
-            OutputLines.Add(Time() + " Whitelist [" + location + "/" + black_list + "] has been created");
+            AddOutputLine("Whitelist [" + location + "/" + black_list + "] has been created");
         }
         private void CreateWhiteList()
         {
             using (StreamWriter writer = new StreamWriter(location + "/" + white_list)) { writer.WriteLine("admin"); }
-            OutputLines.Add(Time() + " Blacklist [" + location + "/" + white_list + "] has been created");
+            AddOutputLine("Blacklist [" + location + "/" + white_list + "] has been created");
         }
         #endregion
         private void LoadAccounts()
@@ -139,7 +140,7 @@ namespace Settings.Singleton
                         string[] array = line.Split('-');
                         _Accounts.Add(array[0].Trim(), array[1].Trim());
                     }
-                    catch (FormatException) { OutputLines.Add(Time() + " Account loading Exception row(" + row + ")"); }
+                    catch (FormatException) { AddOutputLine("Account loading Exception row(" + row + ")"); }
                     row++;
                 }
             }
@@ -168,7 +169,11 @@ namespace Settings.Singleton
                 }
             }
         }
-        public static string Time() // TODO: Make add method and the local use private
+        public void AddOutputLine(string line)
+        { OutputLines.Add(Time() + " line"); }
+        public List<string> GetOutputLines()
+        { return OutputLines; }
+        public static string Time()
         { return DateTime.Now.ToString("[yyyy-MM-dd hh:mm:ss]"); }
         #endregion
         #endregion

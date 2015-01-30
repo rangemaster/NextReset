@@ -14,7 +14,6 @@ namespace Settings.Network.Handlers.Server
     {
         public void Handle(NetworkListener server, TcpClient client, NetworkPackage package)
         {
-            // TODO: Update available questions set off button. So there will be no confict when changing the files
             List<Tuple<List<string>, string>> data = new List<Tuple<List<string>, string>>();
             List<string> patches = LoadPatches();
             foreach (string patch in patches)
@@ -27,12 +26,11 @@ namespace Settings.Network.Handlers.Server
                 catch (FileNotFoundException) { Debug.WriteLine("Patch not fount [" + patch + "]"); }
             }
             string version = null;
-            using (StreamReader reader = new StreamReader(AppSettings.SaveOrLoad._Level_Source_Location + "/" + "Version.reset"))
+            using (StreamReader reader = new StreamReader(AppSettings.SaveOrLoad._Level_Source_Location + "/" + AppSettings.SaveOrLoad._Version_Filename))
             { version = reader.ReadLine(); }
 
             Debug.WriteLine("Sending Update Data");
-            NetworkPackage SendPackage = new NetworkPackage();
-            SendPackage.ExecuteCode = (int)(NetworkSettings.ExecuteCode.update_response);
+            NetworkPackage SendPackage = new NetworkPackage((int)(NetworkSettings.ExecuteCode.update_response));
             SendPackage.Message = version;
             SendPackage.Data = data;
             Debug.WriteLine("Debugging list");

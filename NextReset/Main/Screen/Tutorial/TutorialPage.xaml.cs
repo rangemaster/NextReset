@@ -86,12 +86,7 @@ namespace Main.Screen.Tutorial
         #region Add Legenda Field
         private void AddLegendaFieldLine(Brush color, string description)
         {
-            StackPanel sp = new StackPanel();
-            sp.Orientation = Orientation.Horizontal;
-            sp.Height = 50;
-            sp.Width = (int)(_Legenda_StackPanel.Width / 2);
-            sp.Margin = new Thickness(1, 1, 1, 1);
-            sp.Background = new SolidColorBrush(Colors.LightCyan); // TODO: Merge method to 1 (Create Stackpanel)
+            StackPanel sp = CreateStackPanel();
             StackPanel rect = new StackPanel();
             rect.Width = 50;
             rect.Height = 50;
@@ -121,12 +116,7 @@ namespace Main.Screen.Tutorial
         { AddLegendaCommandLine(command, description, true); }
         private void AddLegendaCommandLine(string command, string description, bool enabled)
         {
-            StackPanel sp = new StackPanel();
-            sp.Orientation = Orientation.Horizontal;
-            sp.Height = 50;
-            sp.Width = (int)(_Legenda_StackPanel.Width / 2);
-            sp.Margin = new Thickness(1, 1, 1, 1);
-            sp.Background = new SolidColorBrush(Colors.LightCyan); // TODO: Merge method to 1 (Create Stackpanel)
+            StackPanel sp = CreateStackPanel();
             Button button = new Button();
             button.Content = command + " 1x";
             button.IsEnabled = enabled;
@@ -349,6 +339,16 @@ namespace Main.Screen.Tutorial
         #endregion
 
         #region Create
+        private StackPanel CreateStackPanel()
+        {
+            StackPanel sp = new StackPanel();
+            sp.Orientation = Orientation.Horizontal;
+            sp.Height = 50;
+            sp.Width = (int)(_Legenda_StackPanel.Width / 2);
+            sp.Margin = new Thickness(1, 1, 1, 1);
+            sp.Background = new SolidColorBrush(Colors.LightCyan);
+            return sp;
+        }
         private TextBlock CreateTextblock()
         {
             TextBlock tb = new TextBlock();

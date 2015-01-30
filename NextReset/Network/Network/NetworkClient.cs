@@ -13,17 +13,15 @@ namespace Settings.Network
     {
         private TcpClient client = null;
         public NetworkClient()
-        {
-
-        }
+        { }
         public void Connect()
-        { Connect("127.0.0.1", 7999); }
+        { Connect(NetworkSettings.Address.IP_Address, NetworkSettings.Address.Server_Port); }
         public void Connect(string hostname, int port)
         { client = new TcpClient(hostname, port); }
         public bool IsConnected { get { return client.Connected; } }
         public void SendMessage(string message)
         {
-            NetworkPackage package = new NetworkPackage();
+            NetworkPackage package = new NetworkPackage((int)(NetworkSettings.ExecuteCode.accept));
             package.Message = message;
             Send(package);
         }

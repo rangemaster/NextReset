@@ -1,6 +1,7 @@
 ﻿using Main.Screen.Tutorial;
 using Main.Screens;
 using Network;
+using Network.Singleton;
 using Settings;
 using Settings.Network;
 using Settings.Network.Handlers.Client;
@@ -40,8 +41,12 @@ namespace Main
         public ClientPage()
         {
             InitializeComponent();
-
-            InitBeforeLogin();
+            if (SingleGameData.Get.client != null)
+            { client = SingleGameData.Get.client; }
+            if (!SingleGameData.Get.LoggedIn)
+            { InitBeforeLogin(); }
+            else
+            { InitAfterLogin(); }
             AppSettings.PageSettings(this);
         }
         #region Befor Login
@@ -72,15 +77,15 @@ namespace Main
             Label label = _Button_Stackpanel.Children[0 + _StartOffset] as Label;
             label.Width = _LoginWidth;
             label.FontSize = _LoginFontSize;
-            label.Content = "Username:"; // TODO: Magic cookie
-            label.Foreground = new SolidColorBrush(Colors.Green); // TODO: Magic cookie
+            label.Content = AppSettings.Login._Username_tx;
+            label.Foreground = AppSettings.Login._Username_label_brush;
         }
         private void InitUsername_tx()
         {
             TextBox tb = _Button_Stackpanel.Children[1 + _StartOffset] as TextBox;
             tb.Width = _LoginWidth;
             tb.FontSize = _LoginFontSize;
-            tb.Foreground = new SolidColorBrush(Colors.Black); // TODO: Magic cookie (Appsettings)
+            tb.Foreground = AppSettings.Login._Username_tb_brush;
             tb.IsEnabled = true;
         }
         private void InitPassword_lb()
@@ -88,15 +93,15 @@ namespace Main
             Label label = _Button_Stackpanel.Children[2 + _StartOffset] as Label;
             label.Width = _LoginWidth;
             label.FontSize = _LoginFontSize;
-            label.Content = "Password:"; // TODO: Magic cookie
-            label.Foreground = new SolidColorBrush(Colors.Green); // TODO: Magic cookie
+            label.Content = AppSettings.Login._Password_tx;
+            label.Foreground = AppSettings.Login._Password_label_brush;
         }
         private void InitPassword_tx()
         {
             PasswordBox pb = _Button_Stackpanel.Children[3 + _StartOffset] as PasswordBox;
             pb.Width = _LoginWidth;
             pb.FontSize = _LoginFontSize;
-            pb.Foreground = new SolidColorBrush(Colors.Black);
+            pb.Foreground = AppSettings.Login._Password_tb_brush;
             pb.IsEnabled = true;
         }
         private void InitFeedback_tx()
@@ -104,7 +109,7 @@ namespace Main
             TextBlock tb = _Button_Stackpanel.Children[4 + _StartOffset] as TextBlock;
             tb.Width = _LoginWidth;
             tb.FontSize = _LoginFontSize;
-            tb.Foreground = new SolidColorBrush(Colors.Magenta);
+            tb.Foreground = AppSettings.Login._Feedback_tb_brush;
         }
         private void InitFields()
         {
@@ -121,10 +126,6 @@ namespace Main
         private void Confirm(object sender, RoutedEventArgs e)
         {
             int before = 1;
-            //for (int i = 0; i < _Button_Stackpanel.Children.Count; i++)
-            //{
-            //    Debug.WriteLine("ToString: " + _Button_Stackpanel.Children[i].ToString());
-            //}
             InitFields();
             if ((_Button_Stackpanel.Children[1 + before] as TextBox).Text == null || (_Button_Stackpanel.Children[1 + before] as TextBox).Text.Equals(""))
             {
@@ -147,8 +148,10 @@ namespace Main
                 string passFix = "";
                 for (int i = 0; i < password.Length; i++)
                 { passFix += (i == 0 || i == password.Length - 1 ? "" + password[i] : "*"); }
-
-                MessageBoxResult result = MessageBox.Show("User[" + username + "], Pass[" + passFix + "]", "Correct?", MessageBoxButton.YesNoCancel); // TODO Magic cookie
+                string user = AppSettings.MessageBox.Confirmation._User + "[" + username + "]";
+                string pass = AppSettings.MessageBox.Confirmation._Pass + "[" + passFix + "]";
+                string title = AppSettings.MessageBox.Confirmation._Confirm;
+                MessageBoxResult result = MessageBox.Show(user + ", " + pass, title, MessageBoxButton.YesNoCancel);
                 if (result == MessageBoxResult.Yes)
                 { SendConfirmation(username, password); }
                 else
@@ -159,13 +162,11 @@ namespace Main
         {
             if (client == null)
                 client = SetupConnection(username);
-            //Thread.Sleep(1000);
-            NetworkPackage package = new NetworkPackage();
-            package.ExecuteCode = (int)NetworkSettings.ExecuteCode.login_request;
+            NetworkPackage package = new NetworkPackage((int)NetworkSettings.ExecuteCode.login_request);
             List<string> list = new List<string>();
             list.Add(username);
             list.Add(password);
-            package.Data.Add(new Tuple<List<string>, string>(list, "Login Data")); // TODO: Magic cookie
+            package.Data.Add(new Tuple<List<string>, string>(list, AppSettings.Login._LoginData));
             client.Send(package);
             NetworkPackage ReturnPackage = client.Receive();
             ConfirmationHandler(ReturnPackage);
@@ -182,13 +183,13 @@ namespace Main
         }
         private void LoginWrong()
         {
-            (_Button_Stackpanel.Children[4 + _StartOffset] as TextBlock).Text = "Username or password wrong";
+            (_Button_Stackpanel.Children[4 + _StartOffset] as TextBlock).Text = AppSettings.Login._LoginWrong;
             FeedbackTimer();
         }
         private void LoginFailed()
         {
-            (_Button_Stackpanel.Children[4 + _StartOffset] as TextBlock).Text = "Login Failed";
-            ServerData.Get.OutputLines.Add(ServerData.Time() + " Login Failed");
+            (_Button_Stackpanel.Children[4 + _StartOffset] as TextBlock).Text = AppSettings.Login._LoginFailed;
+            ServerData.Get.AddOutputLine(AppSettings.Login._LoginFailed);
             FeedbackTimer();
         }
         #region Timer
@@ -212,6 +213,8 @@ namespace Main
         }
         private void Succes()
         {
+            SingleGameData.Get.client = client;
+            SingleGameData.Get.LoggedIn = true;
             _Button_Stackpanel.Children.Clear();
             InitAfterLogin();
         }
@@ -286,23 +289,25 @@ namespace Main
         #region Functions
         private void UpdateCheck()
         {
-            if (client == null)
-                client = SetupConnection("Roel"); // TODO: Inlog screen
-            if (UpdateAvailableCheck(client, GameController.LoadVersion()))
+            int UpdateCheckValue = UpdateAvailableCheck(client, GameController.LoadVersion());
+            if (UpdateCheckValue == -1)
             {
-                MessageBoxResult result = MessageBox.Show("You want to get the update?", "Up - To - Date", MessageBoxButton.YesNo);
+                MessageBoxResult result = MessageBox.Show(AppSettings.MessageBox.UpdateCheck._Line, AppSettings.MessageBox.UpdateCheck._Title, MessageBoxButton.YesNo);
                 if (result == MessageBoxResult.Yes)
                 {
                     Debug.WriteLine("Get next update");
-                    NetworkPackage sendPackage = new NetworkPackage();
-                    sendPackage.ExecuteCode = (int)NetworkSettings.ExecuteCode.update_request;
+                    NetworkPackage sendPackage = new NetworkPackage((int)NetworkSettings.ExecuteCode.update_request);
                     client.Send(sendPackage);
                     WaitForResponseUpdate(client);
                     Debug.WriteLine("Not waiting anymore");
                 }
             }
+            else if (UpdateCheckValue == 1)
+            { MessageBox.Show("Newer version then on the server"); }
+            else if (UpdateCheckValue == 0)
+            { MessageBox.Show(AppSettings.MessageBox.UpdateCheck._No_Update); }
             else
-            { MessageBox.Show("No Updates Available"); }
+            { Debug.WriteLine("Update Available Check, Wrong package send [" + UpdateCheckValue + "]"); }
         }
         #region Setup connection
         public NetworkClient SetupConnection(string name)
@@ -317,28 +322,14 @@ namespace Main
         /// <summary>
         /// '0' = same version - '1' = newer version - '-1' = older version.
         /// </summary>
-        public bool UpdateAvailableCheck(NetworkClient client, string version)
+        public int UpdateAvailableCheck(NetworkClient client, string version)
         {
-            bool available = false;
-            NetworkPackage sendPackage = new NetworkPackage();
-            sendPackage.ExecuteCode = (int)NetworkSettings.ExecuteCode.update_available_check;
+            int available = 0;
+            NetworkPackage sendPackage = new NetworkPackage((int)NetworkSettings.ExecuteCode.update_available_check);
             sendPackage.Message = version;
             client.Send(sendPackage);
             NetworkPackage returnPackage = client.Receive();
-            if (returnPackage.ExecuteCode == (int)NetworkSettings.ExecuteCode.update_available_response)
-            {
-                Debug.WriteLine("Update Available Check: " + returnPackage.Message);
-                if (returnPackage.Value == 0)
-                { available = false; }
-                else if (returnPackage.Value == -1) // meaning: you got lower version
-                { available = true; }
-                else
-                {
-                    MessageBox.Show("Newer version then on the server");
-                    available = false;
-                }
-            }
-            else { Debug.WriteLine("Update Available Check, Wrong package send [" + returnPackage.ExecuteCode + "]"); return false; }
+            available = returnPackage.Value;
             return available;
         }
         #endregion
@@ -350,7 +341,7 @@ namespace Main
             if (returnPackage.ExecuteCode == (int)NetworkSettings.ExecuteCode.update_response)
             {
                 Debug.WriteLine("Received levels from server");
-                HandleUpdate(returnPackage); // TODO: Implementation (Ended)
+                HandleUpdate(returnPackage);
             }
             else { Debug.WriteLine("Server send wrong package [" + returnPackage.ExecuteCode + "]"); }
         }
@@ -358,8 +349,6 @@ namespace Main
         #region Handle Update
         public void HandleUpdate(NetworkPackage package)
         {
-            // TODO: Implementation
-
             for (int i = 0; i < package.Data.Count; i++)
             {
                 Debug.WriteLine("--- " + package.Data[i].Item2 + " ---");
@@ -368,7 +357,7 @@ namespace Main
             }
             string location = AppSettings.SaveOrLoad._Level_Source_Location;
             string file1 = AppSettings.SaveOrLoad._Level_Source_Filename;
-            using (StreamWriter writer = new StreamWriter(location + "/" + "Version.reset"))
+            using (StreamWriter writer = new StreamWriter(location + "/" + AppSettings.SaveOrLoad._Version_Filename))
             {
                 writer.WriteLine(package.Message);
             }

@@ -31,11 +31,9 @@ namespace NextResetServer
         public bool handle()
         {
             Debug.WriteLine("Waiting for networkpackage");
-            _page.AddOutput("Waiting for networkpackage");
             try
             {
                 NetworkPackage package = NetworkListener.RecievePackage(_client);
-                _page.AddOutput("Package [" + package.ExecuteCode + "]");
                 try
                 { Handlers[package.ExecuteCode].Handle(_server, _client, package); }
                 catch (NullReferenceException) { _page.AddOutput("Client [" + _name + "] Left"); _page.LogOff(_name); return false; }
@@ -52,6 +50,7 @@ namespace NextResetServer
                 Handlers.Add((int)NetworkSettings.ExecuteCode.login_request, new LoginHandler());
                 Handlers.Add((int)NetworkSettings.ExecuteCode.update_available_check, new CheckVersionHandler());
                 Handlers.Add((int)NetworkSettings.ExecuteCode.update_request, new UpdateRequestHandler());
+                Handlers.Add((int)NetworkSettings.ExecuteCode.create_account_request, new CreateAccountHandler());
             }
         }
     }

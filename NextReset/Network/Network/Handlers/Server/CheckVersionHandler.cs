@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Settings.Singleton;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -13,11 +14,14 @@ namespace Settings.Network.Handlers.Server
         public void Handle(NetworkListener server, TcpClient client, NetworkPackage package)
         {
             Debug.WriteLine("Check Version");
-            string ClientVersion = package.Message;
-            string ServerVersion = GameController.LoadVersion();
-            int dif = GameController.CompareVersion(ServerVersion, ClientVersion);
-            NetworkPackage returnPackage = new NetworkPackage();
-            returnPackage.ExecuteCode = (int)NetworkSettings.ExecuteCode.update_available_response;
+            int dif = 0;
+            if(ServerData.Get.IsUpdatable)
+            {
+                string ClientVersion = package.Message;
+                string ServerVersion = GameController.LoadVersion();
+                dif = GameController.CompareVersion(ServerVersion, ClientVersion);
+            }
+            NetworkPackage returnPackage = new NetworkPackage((int)NetworkSettings.ExecuteCode.update_available_response);
             returnPackage.Value = dif;
             NetworkListener.SendPackage(client, returnPackage);
         }

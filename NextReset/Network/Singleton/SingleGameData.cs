@@ -1,5 +1,6 @@
 ﻿using Network;
 using Settings;
+using Settings.Network;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,8 @@ namespace Network.Singleton
     public class SingleGameData
     {
         private static SingleGameData _Instance = null;
+        public bool LoggedIn { get; set; }
+        public NetworkClient client { get; set; }
         private bool _UpToDate = false;
         private int[] _AvailableMethods;
         private int[][] _Landscape;
