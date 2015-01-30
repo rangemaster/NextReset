@@ -30,6 +30,7 @@ namespace Main
     /// </summary>
     public partial class ClientPage : Page
     {
+        private int _LoginWidth = 200, _StartOffset = 1;
         private NetworkClient client;
         private Thread _NetworkReader = null;
         private Dictionary<int, CHandler> _Handlers = null;
@@ -37,10 +38,131 @@ namespace Main
         public ClientPage()
         {
             InitializeComponent();
-            Init();
+
+            InitBeforeLogin();
             AppSettings.PageSettings(this);
         }
-        private void Init()
+        #region Befor Login
+        #region Init
+        private void InitBeforeLogin()
+        {
+            #region Username
+            Label Username_lb = new Label();
+            TextBox Username_tx = new TextBox();
+            #endregion
+            #region Password
+            Label Password_lb = new Label();
+            PasswordBox Password_tx = new PasswordBox();
+            #endregion
+            _Button_Stackpanel.Children.Add(Username_lb);
+            _Button_Stackpanel.Children.Add(Username_tx);
+            _Button_Stackpanel.Children.Add(Password_lb);
+            _Button_Stackpanel.Children.Add(Password_tx);
+            InitFields();
+            AddButton("Confirm", Confirm);
+        }
+        private void InitUsername_lb()
+        {
+            Label label = _Button_Stackpanel.Children[0 + _StartOffset] as Label;
+            label.Width = _LoginWidth;
+            label.Content = "Username:"; // TODO: Magic cookie
+            label.Foreground = new SolidColorBrush(Colors.White); // TODO: Magic cookie
+        }
+        private void InitUsername_tx()
+        {
+            TextBox tb = _Button_Stackpanel.Children[1 + _StartOffset] as TextBox;
+            tb.Width = _LoginWidth;
+            tb.Foreground = new SolidColorBrush(Colors.Black); // TODO: Magic cookie (Appsettings)
+            tb.IsEnabled = true;
+        }
+        private void InitPassword_lb()
+        {
+            Label label = _Button_Stackpanel.Children[2 + _StartOffset] as Label;
+            label.Width = _LoginWidth;
+            label.Content = "Password:";
+            label.Foreground = new SolidColorBrush(Colors.White); // TODO: Magic cookie
+        }
+        private void InitPassword_tx()
+        {
+            PasswordBox pb = _Button_Stackpanel.Children[3 + _StartOffset] as PasswordBox;
+            pb.Width = _LoginWidth;
+            pb.Foreground = new SolidColorBrush(Colors.Black);
+            pb.IsEnabled = true;
+        }
+        private void InitFields()
+        {
+            InitUsername_lb();
+            InitUsername_tx();
+            InitPassword_lb();
+            InitPassword_tx();
+        }
+        #endregion
+        #region Buttons
+        #endregion
+        #region Functions
+        private void Confirm(object sender, RoutedEventArgs e)
+        {
+            int before = 1;
+            //for (int i = 0; i < _Button_Stackpanel.Children.Count; i++)
+            //{
+            //    Debug.WriteLine("ToString: " + _Button_Stackpanel.Children[i].ToString());
+            //}
+            InitFields();
+            if ((_Button_Stackpanel.Children[1 + before] as TextBox).Text == null || (_Button_Stackpanel.Children[1 + before] as TextBox).Text.Equals(""))
+            {
+                (_Button_Stackpanel.Children[0 + before] as Label).Content = "(Fill in) Username:";
+                (_Button_Stackpanel.Children[0 + before] as Label).Foreground = new SolidColorBrush(Colors.Red);
+            }
+            else if ((_Button_Stackpanel.Children[3 + before] as PasswordBox).Password == null || (_Button_Stackpanel.Children[3 + before] as PasswordBox).Password.Equals(""))
+            {
+                (_Button_Stackpanel.Children[2 + before] as Label).Content = "(Fill in) Password:";
+                (_Button_Stackpanel.Children[2 + before] as Label).Foreground = new SolidColorBrush(Colors.Red);
+            }
+            else
+            {
+                TextBox Username_tb = _Button_Stackpanel.Children[1 + _StartOffset] as TextBox;
+                PasswordBox Password_tb = _Button_Stackpanel.Children[3 + _StartOffset] as PasswordBox;
+                Username_tb.IsEnabled = false;
+                Password_tb.IsEnabled = false;
+                string username = Username_tb.Text;
+                string password = Password_tb.Password;
+                string passFix = "";
+                for (int i = 0; i < password.Length; i++)
+                { passFix += (i == 0 || i == password.Length - 1 ? "" + password[i] : "*"); }
+
+                MessageBoxResult result = MessageBox.Show("[" + username + "] [" + passFix + "]", "Correct?", MessageBoxButton.YesNoCancel);
+                if (result == MessageBoxResult.Yes)
+                { SendConfirmation(username, password); }
+                else
+                { InitFields(); }
+            }
+        }
+        private void SendConfirmation(string username, string password)
+        {
+            if (client == null)
+                client = SetupConnection(username);
+            //Thread.Sleep(1000);
+            NetworkPackage package = new NetworkPackage();
+            package.ExecuteCode = (int)NetworkSettings.ExecuteCode.login_request;
+            List<string> list = new List<string>();
+            list.Add(username);
+            list.Add(password);
+            package.Data.Add(new Tuple<List<string>, string>(list, "Login Data")); // TODO: Magic cookie
+            client.Send(package);
+            Debug.WriteLine("Confirmation Send");
+            NetworkPackage ReturnPackage = client.Receive();
+            Debug.WriteLine("Client Reseived package [Value = " + ReturnPackage.Value + "]");
+        }
+        private void Succes()
+        {
+            _Button_Stackpanel.Children.Clear();
+            InitAfterLogin();
+        }
+        #endregion
+        #endregion
+
+        #region After Login
+        private void InitAfterLogin()
         {
             AddButton("Start", StartPage);
             AddButton("Tutorial", TutorialPage);
@@ -214,6 +336,7 @@ namespace Main
         #endregion
         private void SaveSettings() { }
         private void SaveAppData() { }
+        #endregion
         #endregion
     }
 }

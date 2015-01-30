@@ -23,7 +23,8 @@ namespace Settings.Network
             update_available_response,
             update_request,
             update_response,
-
+            login_request,
+            login_response,
         }
         public class Error
         {

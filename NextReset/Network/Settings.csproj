@@ -54,14 +54,15 @@
     <Compile Include="Network\Handlers\Client\CHandler.cs" />
     <Compile Include="Network\Handlers\Client\RequestResponse.cs" />
     <Compile Include="Network\Handlers\Server\CheckVersionHandler.cs" />
+    <Compile Include="Network\Handlers\Server\LoginHandler.cs" />
     <Compile Include="Network\Handlers\Server\SHandler.cs" />
-    <Compile Include="Network\Handlers\Server\NewRequestHandler.cs" />
     <Compile Include="Network\Handlers\Server\UpdateRequestHandler.cs" />
     <Compile Include="Network\NetworkClient.cs" />
     <Compile Include="Network\NetworkListener.cs" />
     <Compile Include="Network\NetworkPackage.cs" />
     <Compile Include="Network\NetworkSettings.cs" />
     <Compile Include="Singleton\LevelData.cs" />
+    <Compile Include="Singleton\ServerData.cs" />
     <Compile Include="ThrowableException\LevelNotFoundException.cs" />
     <Compile Include="ThrowableException\LevelUnstartubleException.cs" />
     <Compile Include="ThrowableException\LocationUnknownException.cs" />

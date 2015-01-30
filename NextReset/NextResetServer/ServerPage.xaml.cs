@@ -1,5 +1,6 @@
 ﻿using Network;
 using Settings.Network;
+using Settings.Singleton;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -28,7 +29,7 @@ namespace NextResetServer
     public partial class ServerPage : Page
     {
         private static string version = null;
-        private List<string> _NewOutputLines = null;
+        private static List<string> _NewOutputLines = null;
         private List<string> _OldOutputLines = null;
         private DispatcherTimer _OutputTimer = null;
         private NetworkListener server;
@@ -52,11 +53,11 @@ namespace NextResetServer
         public void AddError(int code)
         { AddError("", code); }
         public void AddError(string location, int code)
-        { _NewOutputLines.Add(Time() + " --- " + "Error [" + location + "][" + code + "]"); }
+        {
+            _NewOutputLines.Add(ServerData.Time() + " --- " + "Error [" + location + "][" + code + "]");
+        }
         public void AddOutput(string output)
-        { _NewOutputLines.Add(Time() + " --- " + output); }
-        private string Time()
-        { return DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss"); }
+        { _NewOutputLines.Add(ServerData.Time() + " --- " + output); }
         private int Peek()
         { return _NewOutputLines.Count > 0 ? 1 : -1; }
         private void StartOutputTimer()
@@ -73,6 +74,13 @@ namespace NextResetServer
         {
             while (Peek() >= 0)
             {
+                Debug.WriteLine("Peek");
+                for (int i = 0; i < ServerData.Get.OutputLines.Count; i++)
+                {
+                    Debug.WriteLine("Output Line: " + ServerData.Get.OutputLines[i]);
+                    _NewOutputLines.Add(ServerData.Get.OutputLines[i]);
+                }
+                ServerData.Get.OutputLines.Clear();
                 string line = _NewOutputLines[0];
                 _NewOutputLines.RemoveAt(0);
                 Output(line);
@@ -105,7 +113,7 @@ namespace NextResetServer
                     {
                         TcpClient client = server.AcceptTcpClient();
                         string name = NetworkListener.RecievePackage(client).Message;
-                        Debug.WriteLine("Message: " + name);
+                        Debug.WriteLine("Server: Username: " + name);
                         server.AddTcpClient(name, client);
                         new Thread(() =>
                         {
@@ -141,5 +149,14 @@ namespace NextResetServer
             }
         }
         #endregion
+        #region AccountData
+        public bool LogOff(string name)
+        {
+
+            return false;
+        }
+        #endregion
+        public static void AddNewOutputLine(string line)
+        { _NewOutputLines.Add(line); }
     }
 }
