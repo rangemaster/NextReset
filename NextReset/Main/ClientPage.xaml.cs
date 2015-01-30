@@ -4,6 +4,7 @@ using Network;
 using Settings;
 using Settings.Network;
 using Settings.Network.Handlers.Client;
+using Settings.Singleton;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,6 +23,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace Main
 {
@@ -30,7 +32,7 @@ namespace Main
     /// </summary>
     public partial class ClientPage : Page
     {
-        private int _LoginWidth = 200, _StartOffset = 1;
+        private int _LoginWidth = 200, _LoginFontSize = 20, _StartOffset = 1;
         private NetworkClient client;
         private Thread _NetworkReader = null;
         private Dictionary<int, CHandler> _Handlers = null;
@@ -54,10 +56,14 @@ namespace Main
             Label Password_lb = new Label();
             PasswordBox Password_tx = new PasswordBox();
             #endregion
+            #region Feedback
+            TextBlock Feedback_tx = new TextBlock();
+            #endregion
             _Button_Stackpanel.Children.Add(Username_lb);
             _Button_Stackpanel.Children.Add(Username_tx);
             _Button_Stackpanel.Children.Add(Password_lb);
             _Button_Stackpanel.Children.Add(Password_tx);
+            _Button_Stackpanel.Children.Add(Feedback_tx);
             InitFields();
             AddButton("Confirm", Confirm);
         }
@@ -65,13 +71,15 @@ namespace Main
         {
             Label label = _Button_Stackpanel.Children[0 + _StartOffset] as Label;
             label.Width = _LoginWidth;
+            label.FontSize = _LoginFontSize;
             label.Content = "Username:"; // TODO: Magic cookie
-            label.Foreground = new SolidColorBrush(Colors.White); // TODO: Magic cookie
+            label.Foreground = new SolidColorBrush(Colors.Green); // TODO: Magic cookie
         }
         private void InitUsername_tx()
         {
             TextBox tb = _Button_Stackpanel.Children[1 + _StartOffset] as TextBox;
             tb.Width = _LoginWidth;
+            tb.FontSize = _LoginFontSize;
             tb.Foreground = new SolidColorBrush(Colors.Black); // TODO: Magic cookie (Appsettings)
             tb.IsEnabled = true;
         }
@@ -79,15 +87,24 @@ namespace Main
         {
             Label label = _Button_Stackpanel.Children[2 + _StartOffset] as Label;
             label.Width = _LoginWidth;
-            label.Content = "Password:";
-            label.Foreground = new SolidColorBrush(Colors.White); // TODO: Magic cookie
+            label.FontSize = _LoginFontSize;
+            label.Content = "Password:"; // TODO: Magic cookie
+            label.Foreground = new SolidColorBrush(Colors.Green); // TODO: Magic cookie
         }
         private void InitPassword_tx()
         {
             PasswordBox pb = _Button_Stackpanel.Children[3 + _StartOffset] as PasswordBox;
             pb.Width = _LoginWidth;
+            pb.FontSize = _LoginFontSize;
             pb.Foreground = new SolidColorBrush(Colors.Black);
             pb.IsEnabled = true;
+        }
+        private void InitFeedback_tx()
+        {
+            TextBlock tb = _Button_Stackpanel.Children[4 + _StartOffset] as TextBlock;
+            tb.Width = _LoginWidth;
+            tb.FontSize = _LoginFontSize;
+            tb.Foreground = new SolidColorBrush(Colors.Magenta);
         }
         private void InitFields()
         {
@@ -95,6 +112,7 @@ namespace Main
             InitUsername_tx();
             InitPassword_lb();
             InitPassword_tx();
+            InitFeedback_tx();
         }
         #endregion
         #region Buttons
@@ -130,7 +148,7 @@ namespace Main
                 for (int i = 0; i < password.Length; i++)
                 { passFix += (i == 0 || i == password.Length - 1 ? "" + password[i] : "*"); }
 
-                MessageBoxResult result = MessageBox.Show("[" + username + "] [" + passFix + "]", "Correct?", MessageBoxButton.YesNoCancel);
+                MessageBoxResult result = MessageBox.Show("User[" + username + "], Pass[" + passFix + "]", "Correct?", MessageBoxButton.YesNoCancel); // TODO Magic cookie
                 if (result == MessageBoxResult.Yes)
                 { SendConfirmation(username, password); }
                 else
@@ -149,9 +167,48 @@ namespace Main
             list.Add(password);
             package.Data.Add(new Tuple<List<string>, string>(list, "Login Data")); // TODO: Magic cookie
             client.Send(package);
-            Debug.WriteLine("Confirmation Send");
             NetworkPackage ReturnPackage = client.Receive();
-            Debug.WriteLine("Client Reseived package [Value = " + ReturnPackage.Value + "]");
+            ConfirmationHandler(ReturnPackage);
+        }
+        private void ConfirmationHandler(NetworkPackage ReturnPackage)
+        {
+            if (ReturnPackage.Value == 0)
+            { LoginWrong(); }
+            else if (ReturnPackage.Value == 1)
+            { Succes(); }
+            else if (ReturnPackage.Value == 2)
+            { AdminSucces(); }
+            else { LoginFailed(); }
+        }
+        private void LoginWrong()
+        {
+            (_Button_Stackpanel.Children[4 + _StartOffset] as TextBlock).Text = "Username or password wrong";
+            FeedbackTimer();
+        }
+        private void LoginFailed()
+        {
+            (_Button_Stackpanel.Children[4 + _StartOffset] as TextBlock).Text = "Login Failed";
+            ServerData.Get.OutputLines.Add(ServerData.Time() + " Login Failed");
+            FeedbackTimer();
+        }
+        #region Timer
+        private void FeedbackTimer()
+        {
+            DispatcherTimer timer = new DispatcherTimer();
+            timer.Interval = new TimeSpan(0, 0, 2);
+            timer.Tick += FeedbackTimer_Tick;
+            timer.Start();
+        }
+        private void FeedbackTimer_Tick(object sender, EventArgs e)
+        {
+            (_Button_Stackpanel.Children[4 + _StartOffset] as TextBlock).Text = "";
+            InitFields();
+            (sender as DispatcherTimer).Stop();
+        }
+        #endregion
+        private void AdminSucces()
+        {
+            Succes();
         }
         private void Succes()
         {

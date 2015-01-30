@@ -14,10 +14,20 @@ namespace Settings.Singleton
         private static ServerData _Instance = null;
         private static object pathlock = new object();
         private string location = AppSettings.SaveOrLoad._Level_Source_Location + "/" + "Accounts";
-        private string filename = "AccountData.reset";
+        private string account_list = "AccountData.reset";
+        private string black_list = "BlackData.reset";
+        private string white_list = "WhiteData.reset";
         public List<string> OutputLines { get; private set; }
         public Dictionary<string, string> _Accounts { get; set; }
-        private ServerData() { OutputLines = new List<string>(); Load(); }
+        public List<string> _WhiteList { get; private set; }
+        public List<string> _BlackList { get; private set; }
+        private ServerData()
+        {
+            OutputLines = new List<string>();
+            _WhiteList = new List<string>();
+            _BlackList = new List<string>();
+            Load();
+        }
         public static ServerData Get
         {
             get
@@ -40,14 +50,14 @@ namespace Settings.Singleton
         {
             _Accounts = new Dictionary<string, string>();
             Debug.WriteLine("Reload Data");
-            if (DirectoryExists())
-            { }
-            if (FileExists())
-            {
-
-            }
-
-            return false;
+            DirectoryExists();
+            AccountsExists();
+            LoadAccounts();
+            BlackListExists();
+            LoadBlackList();
+            WhiteListExists();
+            LoadWhiteList();
+            return true;
         }
         public bool Save()
         {
@@ -64,34 +74,127 @@ namespace Settings.Singleton
         private bool DirectoryExists()
         {
             if (!Directory.Exists(AppSettings.SaveOrLoad._Level_Source_Location))
-            {
-                Directory.CreateDirectory(AppSettings.SaveOrLoad._Level_Source_Location);
-                OutputLines.Add(Time() + " Directory [" + AppSettings.SaveOrLoad._Level_Source_Location + "] has been created");
-            }
+            { CreateSubDictionary(); }
             if (!Directory.Exists(location))
-            {
-                Directory.CreateDirectory(location);
-                OutputLines.Add(Time() + " Directory [" + location + "] has been created");
-                return false;
-            }
+            { CreateDictionary(); return false; }
             return true;
         }
-        private bool FileExists()
+        private bool AccountsExists()
         {
-            if (!File.Exists(location + "/" + filename))
-            {
-                using (StreamWriter writer = new StreamWriter(location + "/" + filename))
-                { writer.WriteLine("admin - admin"); }
-                OutputLines.Add(Time() + " File [" + location + "/" + filename + "] has been created");
-                return false;
-            }
+            if (!File.Exists(location + "/" + account_list))
+            { CreateAccountList(); return false; }
             return true;
         }
-        public static string Time()
+        private bool BlackListExists()
+        {
+            if (!File.Exists(location + "/" + black_list))
+            { CreateBlackList(); return false; }
+            return true;
+        }
+        private bool WhiteListExists()
+        {
+            if (!File.Exists(location + "/" + white_list))
+            { CreateWhiteList(); return false; }
+            return true;
+        }
+        #region Create
+        private void CreateSubDictionary()
+        {
+            Directory.CreateDirectory(AppSettings.SaveOrLoad._Level_Source_Location);
+            OutputLines.Add(Time() + " Directory [" + AppSettings.SaveOrLoad._Level_Source_Location + "] has been created");
+        }
+        private void CreateDictionary()
+        {
+            Directory.CreateDirectory(location);
+            OutputLines.Add(Time() + " Directory [" + location + "] has been created");
+        }
+        private void CreateAccountList()
+        {
+            using (StreamWriter writer = new StreamWriter(location + "/" + account_list))
+            { writer.WriteLine("admin - admin"); }
+            OutputLines.Add(Time() + " File [" + location + "/" + account_list + "] has been created");
+        }
+        private void CreateBlackList()
+        {
+            using (StreamWriter writer = new StreamWriter(location + "/" + black_list)) { writer.WriteLine(""); }
+            OutputLines.Add(Time() + " Whitelist [" + location + "/" + black_list + "] has been created");
+        }
+        private void CreateWhiteList()
+        {
+            using (StreamWriter writer = new StreamWriter(location + "/" + white_list)) { writer.WriteLine("admin"); }
+            OutputLines.Add(Time() + " Blacklist [" + location + "/" + white_list + "] has been created");
+        }
+        #endregion
+        private void LoadAccounts()
+        {
+            _Accounts.Clear();
+            int row = 0;
+            using (StreamReader reader = new StreamReader(location + "/" + account_list))
+            {
+                while (reader.Peek() >= 0)
+                {
+                    try
+                    {
+                        string line = reader.ReadLine();
+                        string[] array = line.Split('-');
+                        _Accounts.Add(array[0].Trim(), array[1].Trim());
+                    }
+                    catch (FormatException) { OutputLines.Add(Time() + " Account loading Exception row(" + row + ")"); }
+                    row++;
+                }
+            }
+        }
+        private void LoadWhiteList()
+        {
+            _WhiteList.Clear();
+            using (StreamReader reader = new StreamReader(location + "/" + white_list))
+            {
+                while (reader.Peek() >= 0)
+                {
+                    string line = reader.ReadLine();
+                    _WhiteList.Add(line.Trim());
+                }
+            }
+        }
+        private void LoadBlackList()
+        {
+            _BlackList.Clear();
+            using (StreamReader reader = new StreamReader(location + "/" + black_list))
+            {
+                while (reader.Peek() >= 0)
+                {
+                    string line = reader.ReadLine();
+                    _BlackList.Add(line.Trim());
+                }
+            }
+        }
+        public static string Time() // TODO: Make add method and the local use private
         { return DateTime.Now.ToString("[yyyy-MM-dd hh:mm:ss]"); }
         #endregion
         #endregion
-        public bool ContainsAccount(string username, string password)
-        { return false; } // TODO: Implementation
+        #region Contains Account
+        public int ContainsAccount(string username, string password)
+        {
+            int succes = 0;
+            if (_Accounts.ContainsKey(username))
+            { if (_Accounts[username].Equals(password)) { succes = 1; } }
+            succes += OnBlackList(username);
+            succes += OnWhiteList(username);
+            OutputLines.Add("Login try: " + username + " - " + password + " = " + succes);
+            return succes;
+        }
+        private int OnBlackList(string username)
+        {
+            if (_BlackList.Contains(username))
+                return 10;
+            return 0;
+        }
+        private int OnWhiteList(string username)
+        {
+            if (_WhiteList.Contains(username))
+                return 1;
+            return 0;
+        }
+        #endregion
     }
 }
