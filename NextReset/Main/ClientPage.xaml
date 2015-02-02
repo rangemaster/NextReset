@@ -15,6 +15,30 @@
                     <TextBlock x:Name="_Title_tx2" Text="Reset" Foreground="Red" FontFamily="Gungsuh" FontSize="48"/>
                 </StackPanel>
             </StackPanel>
+            <!-- It's important that this is in the end of the XAML as it needs to be on top of everything else! -->
+            <Grid x:Name="_CreateAccountBox" Visibility="Collapsed">
+                <Grid Background="Black" Opacity="0.7"/>
+                <Border
+            MinWidth="250"
+            Background="Orange" 
+            BorderBrush="Black" 
+            BorderThickness="2" 
+            CornerRadius="20,20,20,20" 
+            HorizontalAlignment="Center" 
+            VerticalAlignment="Center">
+                    <StackPanel>
+                        <TextBlock Margin="5" Text="Username:" FontWeight="Bold" FontFamily="Cambria"/>
+                        <TextBox x:Name="_UsernameInput" MinWidth="150" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <TextBlock Margin="5" Text="Password:" FontWeight="Bold" FontFamily="Cambria"/>
+                        <PasswordBox x:Name="_PasswordInput" MinWidth="150" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <Label x:Name="_FeedbackInput" MinWidth="150" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Button x:Name="Confirm_bn" Margin="5" Content="Confirm" Background="{x:Null}" Click="Confirm_bn_Click"/>
+                            <Button x:Name="Cancel_bn" Margin="5" Content="Cancel" Background="{x:Null}" Click="Cancel_bn_Click" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
         </Grid>
         <Grid Grid.Row="1">
             <TextBlock x:Name="_About_tx" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" Foreground="Aqua"/>

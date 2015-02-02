@@ -33,7 +33,7 @@ namespace Main
     /// </summary>
     public partial class ClientPage : Page
     {
-        private int _LoginWidth = 200, _LoginFontSize = 20, _StartOffset = 1;
+        private int _LoginWidth = 300, _LoginFontSize = 20, _StartOffset = 1;
         private NetworkClient client;
         private Thread _NetworkReader = null;
         private Dictionary<int, CHandler> _Handlers = null;
@@ -71,6 +71,7 @@ namespace Main
             _Button_Stackpanel.Children.Add(Feedback_tx);
             InitFields();
             AddButton("Confirm", Confirm);
+            AddButton("Create", Create);
         }
         private void InitUsername_lb()
         {
@@ -121,9 +122,48 @@ namespace Main
         }
         #endregion
         #region Buttons
+        private void Confirm_bn_Click(object sender, RoutedEventArgs e)
+        { CreateAccountConfirm(); }
+        private void Cancel_bn_Click(object sender, RoutedEventArgs e)
+        { HideCreateDialog(); }
+        private void Create(object sender, RoutedEventArgs e)
+        { CreateAccount(); }
+        private void Confirm(object sender, RoutedEventArgs e)
+        { ConfirmAccount(); }
         #endregion
         #region Functions
-        private void Confirm(object sender, RoutedEventArgs e)
+        private void CreateAccount()
+        {
+            _CreateAccountBox.Visibility = System.Windows.Visibility.Visible;
+            _UsernameInput.Text = (_Button_Stackpanel.Children[1 + _StartOffset] as TextBox).Text;
+            _PasswordInput.Password = (_Button_Stackpanel.Children[3 + _StartOffset] as PasswordBox).Password;
+        }
+        private void CreateAccountConfirm()
+        {
+            List<string> list = new List<string>();
+            list.Add(_UsernameInput.Text.Trim());
+            list.Add(_PasswordInput.Password.Trim());
+            NetworkPackage package = new NetworkPackage((int)NetworkSettings.ExecuteCode.create_account_request);
+            package.Data.Add(new Tuple<List<string>, string>(list, AppSettings.Login._CreateData));
+            if (client == null)
+            { client = SetupConnection(list[0]); }
+            client.Send(package);
+            NetworkPackage ReturnPackage = client.Receive();
+            if (ReturnPackage.ExecuteCode == (int)(NetworkSettings.ExecuteCode.create_account_response))
+            {
+                if (ReturnPackage.Value == 0)
+                { _FeedbackInput.Content = "Username allready used"; _UsernameInput.Focus(); _UsernameInput.SelectAll(); FeedbackTimer(); }
+                else if (ReturnPackage.Value == 1)
+                { HideCreateDialog(); }
+                else
+                { MessageBox.Show(AppSettings.MessageBox.Confirmation._WrongPackage((int)ReturnPackage.ExecuteCode), AppSettings.MessageBox.Confirmation._WrongTitle); }
+            }
+        }
+        private void ShowCreateDialog()
+        { _CreateAccountBox.Visibility = System.Windows.Visibility.Visible; }
+        private void HideCreateDialog()
+        { _CreateAccountBox.Visibility = System.Windows.Visibility.Collapsed; }
+        private void ConfirmAccount()
         {
             int before = 1;
             InitFields();
@@ -169,7 +209,9 @@ namespace Main
             package.Data.Add(new Tuple<List<string>, string>(list, AppSettings.Login._LoginData));
             client.Send(package);
             NetworkPackage ReturnPackage = client.Receive();
-            ConfirmationHandler(ReturnPackage);
+            if (ReturnPackage.ExecuteCode == (int)(NetworkSettings.ExecuteCode.login_response))
+                ConfirmationHandler(ReturnPackage);
+            else { MessageBox.Show(AppSettings.MessageBox.Confirmation._WrongPackage((int)ReturnPackage.ExecuteCode), AppSettings.MessageBox.Confirmation._WrongTitle); }
         }
         private void ConfirmationHandler(NetworkPackage ReturnPackage)
         {
@@ -203,6 +245,7 @@ namespace Main
         private void FeedbackTimer_Tick(object sender, EventArgs e)
         {
             (_Button_Stackpanel.Children[4 + _StartOffset] as TextBlock).Text = "";
+            _FeedbackInput.Content = "";
             InitFields();
             (sender as DispatcherTimer).Stop();
         }

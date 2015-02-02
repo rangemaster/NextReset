@@ -16,7 +16,7 @@ namespace Settings.Network.Handlers.Server
         public void Handle(NetworkListener server, TcpClient client, NetworkPackage package)
         {
             int Value = -1;
-            if (ServerData.Get._Accounts == null)
+            if (ServerData.Get.GetAccounts().Count == 0)
             { ServerData.Get.Reload(); }
             if (package.Data[0].Item2.Equals(AppSettings.Login._LoginData))
             {

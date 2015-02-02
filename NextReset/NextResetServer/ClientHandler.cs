@@ -39,7 +39,7 @@ namespace NextResetServer
                 catch (NullReferenceException) { _page.AddOutput("Client [" + _name + "] Left"); _page.LogOff(_name); return false; }
                 catch (KeyNotFoundException) { _page.AddOutput("ExecuteCode [" + package.ExecuteCode + "] was not found"); return false; }
             }
-            catch (IOException) { _page.AddError("handle", NetworkSettings.Error.IOException); return false; }
+            catch (IOException) { _page.AddError("handle", NetworkSettings.Error.IOException); _page.LogOff(_name); return false; }
             return true;
         }
         private void Register()

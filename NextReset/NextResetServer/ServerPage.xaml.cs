@@ -58,8 +58,10 @@ namespace NextResetServer
         }
         public void AddOutput(string output)
         { _NewOutputLines.Add(ServerData.Time() + " --- " + output); }
-        private int Peek()
-        { return _NewOutputLines.Count > 0 ? 1 : -1; }
+        private int OutputPeek
+        { get { return _NewOutputLines.Count > 0 ? 1 : -1; } }
+        private int RegistrationPeek
+        { get { return ServerData.Get.GetRegistrations().Count > 0 ? 1 : -1; } }
         private void StartOutputTimer()
         {
             if (_OutputTimer == null)
@@ -72,19 +74,41 @@ namespace NextResetServer
         }
         private void OutputTimer_Tick(object sender, EventArgs e)
         {
-            while (Peek() >= 0)
+            OutputLineHandling();
+            RegistrationHandling();
+        }
+        private void OutputLineHandling()
+        {
+            Debug.WriteLine("Check Outputlines");
+            for (int i = 0; i < ServerData.Get.GetOutputLines().Count; i++)
+            {
+                Debug.WriteLine("Output Line: " + ServerData.Get.GetOutputLines()[i]);
+                _NewOutputLines.Add(ServerData.Get.GetOutputLines()[i]);
+            }
+            ServerData.Get.GetOutputLines().Clear();
+            if (OutputPeek >= 0)
             {
                 Debug.WriteLine("Peek");
-                for (int i = 0; i < ServerData.Get.GetOutputLines().Count; i++)
-                {
-                    Debug.WriteLine("Output Line: " + ServerData.Get.GetOutputLines()[i]);
-                    _NewOutputLines.Add(ServerData.Get.GetOutputLines()[i]);
-                }
-                ServerData.Get.GetOutputLines().Clear();
                 string line = _NewOutputLines[0];
                 _NewOutputLines.RemoveAt(0);
                 Output(line);
                 _OldOutputLines.Add(line);
+            }
+        }
+        private void RegistrationHandling()
+        {
+            Debug.WriteLine("Check Registrations");
+            if (RegistrationPeek >= 0)
+            {
+                Debug.WriteLine("Peek");
+                foreach (string username in ServerData.Get.GetRegistrations().Keys)
+                {
+                    Debug.WriteLine("Check username: " + username);
+                    if (ServerData.Get.OnForbiddenList(username) < 0)
+                    { ServerData.Get.AddAccount(username, ServerData.Get.GetRegistrations()[username]); }
+                    else { Debug.WriteLine("On Forbiddenlist: " + username); }
+                }// TODO:}
+                ServerData.Get.GetRegistrations().Clear();
             }
         }
         #region Buttons
@@ -96,6 +120,7 @@ namespace NextResetServer
             _Stop_bn.IsEnabled = true;
             ServerData.Get.IsUpdatable = false;
             _Updatable_bn_Click(sender, e);
+            _NewOutputLines.Add("Server Started");
         }
         private void _Stop_bn_Click(object sender, RoutedEventArgs e)
         {
@@ -104,6 +129,7 @@ namespace NextResetServer
             _Stop_bn.IsEnabled = false;
             _Start_bn.IsEnabled = true;
             ServerData.Get.IsUpdatable = false;
+            _NewOutputLines.Add("Server Stopped");
         }
         private void _Updatable_bn_Click(object sender, RoutedEventArgs e)
         {
@@ -170,7 +196,7 @@ namespace NextResetServer
         #region AccountData
         public bool LogOff(string name)
         {
-
+            // TODO: 31-01-2015
             return false;
         }
         #endregion

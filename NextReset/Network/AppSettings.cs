@@ -58,8 +58,9 @@ namespace Network
             public static Brush _Password_label_brush = new SolidColorBrush(Colors.Green);
             public static Brush _Password_tb_brush = new SolidColorBrush(Colors.Black);
             public static Brush _Feedback_tb_brush = new SolidColorBrush(Colors.Magenta);
+            public const string _CreateData = "Create Data";
             public const string _LoginData = "Login Data";
-            public const string _LoginWrong = "Username or password wrong";
+            public const string _LoginWrong = "Wrong Username or password";
             public const string _LoginFailed = "Login Failed";
         }
         public sealed class Messages
@@ -108,6 +109,9 @@ namespace Network
                 public const string _User = "User";
                 public const string _Pass = "Pass";
                 public const string _Confirm = "Correct?";
+                public static string _WrongPackage(int code)
+                { return "You have received the wrong networkpackage. Contact the app developer. [" + code + "]"; }
+                public const string _WrongTitle = "Wrong network package";
             }
         }
         public sealed class Seperate
