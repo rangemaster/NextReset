@@ -43,7 +43,6 @@ namespace Main.Screens
             tb.FontSize = 16;
             tb.TextWrapping = TextWrapping.Wrap;
             tb.Width = Center_st.Width;
-            tb.Width = 300;
             Center_st.Children.Add(tb);
         }
         private void InitBackButton()
@@ -69,8 +68,20 @@ namespace Main.Screens
             text += "This game is made and developed by Roel Suntjens.\n";
             text += "This game makes use from a server to update the levels if there are new ones.\n";
             text += "To use this game you need te have an account.\n";
+            text += "This game was made to inspire people to do/learn programming easly.\n";
+            text += "\nVersions:\n";
+            text += VersionControl();
             return text;
         }
+        private string VersionControl()
+        {
+            string versions = "";
+            versions += Version("v1.0", "29-01-2015");
+            versions += Version("v1.1", "03-02-2015");
+            return versions;
+        }
+        private string Version(string versionnr, string versionDate)
+        { return versionnr + "\t" + versionDate + "\n"; }
         #endregion
     }
 }

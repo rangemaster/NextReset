@@ -6,7 +6,11 @@
       mc:Ignorable="d" 
       d:DesignHeight="500" d:DesignWidth="500"
 	Title="AboutPage">
-
+    <Page.Resources>
+        <Style x:Key="StackpanelStyle" TargetType="StackPanel">
+            <Setter Property="Width" Value="700"/>
+        </Style>
+    </Page.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
@@ -14,13 +18,13 @@
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" x:Name="Top">
-            <StackPanel x:Name="Top_st"/>
+            <StackPanel x:Name="Top_st" Style="{StaticResource StackpanelStyle}"/>
         </Grid>
-        <Grid Grid.Row="1" x:Name="Center">
-            <StackPanel x:Name="Center_st"/>
+        <Grid Grid.Row="1" x:Name="Center" HorizontalAlignment="Center" Background="LightGray">
+            <StackPanel x:Name="Center_st" Style="{StaticResource StackpanelStyle}"/>
         </Grid>
         <Grid Grid.Row="2" x:Name="Bottom">
-            <StackPanel x:Name="Bottom_st"/>
+            <StackPanel x:Name="Bottom_st" Style="{StaticResource StackpanelStyle}"/>
         </Grid>
     </Grid>
 </Page>
