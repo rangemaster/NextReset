@@ -14,7 +14,6 @@ namespace Settings.Network.Handlers.Server
     {
         public void Handle(NetworkListener server, TcpClient client, NetworkPackage package)
         {
-            // TODO: Implementation Create Account
             bool succes = false;
             if (package.Data[0].Item2.Equals(AppSettings.Login._CreateData))
             {

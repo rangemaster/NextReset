@@ -28,7 +28,6 @@ namespace NextResetServer
     /// </summary>
     public partial class ServerPage : Page
     {
-        private static string version = null;
         private static List<string> _NewOutputLines = null;
         private List<string> _OldOutputLines = null;
         private DispatcherTimer _OutputTimer = null;
@@ -48,20 +47,23 @@ namespace NextResetServer
             _NewOutputLines = new List<string>();
             _OldOutputLines = new List<string>();
         }
+        #region Output
         private void Output(string message)
         { _Output_tx.Text += message + "\n"; }
         public void AddError(int code)
         { AddError("", code); }
         public void AddError(string location, int code)
-        {
-            _NewOutputLines.Add(ServerData.Time() + " --- " + "Error [" + location + "][" + code + "]");
-        }
+        { _NewOutputLines.Add(ServerData.Time() + " --- " + "Error [" + location + "][" + code + "]"); }
         public void AddOutput(string output)
         { _NewOutputLines.Add(ServerData.Time() + " --- " + output); }
+        #endregion
+        #region Peek
         private int OutputPeek
         { get { return _NewOutputLines.Count > 0 ? 1 : -1; } }
         private int RegistrationPeek
         { get { return ServerData.Get.GetRegistrations().Count > 0 ? 1 : -1; } }
+        #endregion
+        #region Timer
         private void StartOutputTimer()
         {
             if (_OutputTimer == null)
@@ -76,17 +78,14 @@ namespace NextResetServer
         {
             OutputLineHandling();
             RegistrationHandling();
+            UpdateOnlineCounter();
         }
         private void OutputLineHandling()
         {
-            Debug.WriteLine("Check Outputlines");
             for (int i = 0; i < ServerData.Get.GetOutputLines().Count; i++)
-            {
-                Debug.WriteLine("Output Line: " + ServerData.Get.GetOutputLines()[i]);
-                _NewOutputLines.Add(ServerData.Get.GetOutputLines()[i]);
-            }
+            { _NewOutputLines.Add(ServerData.Get.GetOutputLines()[i]); }
             ServerData.Get.GetOutputLines().Clear();
-            if (OutputPeek >= 0)
+            while (OutputPeek >= 0)
             {
                 Debug.WriteLine("Peek");
                 string line = _NewOutputLines[0];
@@ -97,20 +96,19 @@ namespace NextResetServer
         }
         private void RegistrationHandling()
         {
-            Debug.WriteLine("Check Registrations");
             if (RegistrationPeek >= 0)
             {
                 Debug.WriteLine("Peek");
                 foreach (string username in ServerData.Get.GetRegistrations().Keys)
                 {
-                    Debug.WriteLine("Check username: " + username);
                     if (ServerData.Get.OnForbiddenList(username) < 0)
                     { ServerData.Get.AddAccount(username, ServerData.Get.GetRegistrations()[username]); }
                     else { Debug.WriteLine("On Forbiddenlist: " + username); }
-                }// TODO:}
+                }
                 ServerData.Get.GetRegistrations().Clear();
             }
         }
+        #endregion
         #region Buttons
         private void _Start_bn_Click(object sender, RoutedEventArgs e)
         {
@@ -145,6 +143,12 @@ namespace NextResetServer
             }
             Debug.WriteLine("Updatable: " + ServerData.Get.IsUpdatable);
         }
+        private void _Save_bn_Click(object sender, RoutedEventArgs e)
+        { ServerData.Get.Save(); }
+        private void _Load_bn_Click(object sender, RoutedEventArgs e)
+        { ServerData.Get.Reload(); }
+        private void _Online_bn_Click(object sender, RoutedEventArgs e)
+        { PrintOnlineUsers(); }
         #endregion
         #region Reading Thread
         private void InitReceiveThread()
@@ -196,8 +200,23 @@ namespace NextResetServer
         #region AccountData
         public bool LogOff(string name)
         {
-            // TODO: 31-01-2015
-            return false;
+            try { server.RemoveTcpClient(name); }
+            catch (IOException) { return false; }
+            catch (ArgumentNullException) { return false; }
+            catch (NullReferenceException) { return false; }
+            return true;
+        }
+        public void UpdateOnlineCounter()
+        {
+            int amount = server.CountTcpClients();
+            _Online_Amount_tx.Content = amount;
+        }
+        private void PrintOnlineUsers()
+        {
+            AddOutput("=========== Online ===========");
+            foreach (string key in server.GetTcpClientKeys())
+            { AddOutput(" * " + key); }
+            AddOutput("==============================");
         }
         #endregion
         public static void AddNewOutputLine(string line)

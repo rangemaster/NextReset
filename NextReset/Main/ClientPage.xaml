@@ -41,7 +41,7 @@
             </Grid>
         </Grid>
         <Grid Grid.Row="1">
-            <TextBlock x:Name="_About_tx" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" Foreground="Aqua"/>
+            <TextBlock x:Name="_About_tx" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="12" Foreground="Green"/>
         </Grid>
     </Grid>
 </Page>

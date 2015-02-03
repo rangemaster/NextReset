@@ -23,6 +23,54 @@ namespace Main.Screens
         public AboutPage()
         {
             InitializeComponent();
+            InitTitle();
+            InitAboutText();
+            InitBackButton();
         }
+        private void InitTitle()
+        {
+            TextBlock tb = new TextBlock();
+            tb.HorizontalAlignment = System.Windows.HorizontalAlignment.Center;
+            tb.Text = "About";
+            tb.FontSize = 32;
+            Top_st.Children.Add(tb);
+        }
+        private void InitAboutText()
+        {
+            TextBlock tb = new TextBlock();
+            tb.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
+            tb.Text = CreateAboutText();
+            tb.FontSize = 16;
+            tb.TextWrapping = TextWrapping.Wrap;
+            tb.Width = Center_st.Width;
+            tb.Width = 300;
+            Center_st.Children.Add(tb);
+        }
+        private void InitBackButton()
+        {
+            Button button = new Button();
+            button.Content = "Back";
+            button.Click += Back_bn_Click;
+            button.Width = 100;
+            this.Bottom_st.Children.Add(button);
+        }
+
+        #region Button Functions
+        private void Back_bn_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.NavigationService.CanGoBack)
+            { this.NavigationService.GoBack(); }
+        }
+        #endregion
+        #region Create
+        private string CreateAboutText()
+        {
+            string text = "";
+            text += "This game is made and developed by Roel Suntjens.\n";
+            text += "This game makes use from a server to update the levels if there are new ones.\n";
+            text += "To use this game you need te have an account.\n";
+            return text;
+        }
+        #endregion
     }
 }

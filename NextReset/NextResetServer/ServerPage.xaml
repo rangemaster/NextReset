@@ -22,6 +22,12 @@
                 <Button x:Name="_Start_bn" Content="Start" Click="_Start_bn_Click"/>
                 <Button x:Name="_Stop_bn" Content="Stop" Click="_Stop_bn_Click"/>
                 <Button x:Name="_Updatable_bn" Content="Updatable" Click="_Updatable_bn_Click"/>
+                <Button x:Name="_Save_bn" Content="Save" Click="_Save_bn_Click"/>
+                <Button x:Name="_Load_bn" Content="Load" Click="_Load_bn_Click"/>
+                <StackPanel Height="50">
+                    <Button x:Name="_Online_tx" Content="Online:" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="_Online_bn_Click" MinHeight="25" Height="15"/>
+                    <Button x:Name="_Online_Amount_tx" Content="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Click="_Online_bn_Click" MinHeight="25" Height="15"/>
+                </StackPanel>
             </StackPanel>
         </Grid>
         <Grid Grid.Row="1">

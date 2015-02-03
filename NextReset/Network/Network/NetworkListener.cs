@@ -43,10 +43,21 @@ namespace Settings.Network
         {
             return listener.AcceptSocket();
         }
+        public List<string> GetTcpClientKeys()
+        {
+            List<string> list = new List<string>();
+            foreach (string key in clients.Keys)
+            { list.Add(key); }
+            return list;
+        }
         public void AddTcpClient(string Key, TcpClient Client)
         { this.clients.Add(Key, Client); }
         public TcpClient GetTcpClient(string Key)
         { return this.clients[Key]; }
+        public void RemoveTcpClient(string key)
+        { this.clients.Remove(key); }
+        public int CountTcpClients()
+        { return clients.Count; }
         public static NetworkPackage RecievePackage(TcpClient client)
         {
             try

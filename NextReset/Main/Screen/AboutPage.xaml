@@ -4,10 +4,23 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       mc:Ignorable="d" 
-      d:DesignHeight="300" d:DesignWidth="300"
+      d:DesignHeight="500" d:DesignWidth="500"
 	Title="AboutPage">
 
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="300*"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" x:Name="Top">
+            <StackPanel x:Name="Top_st"/>
+        </Grid>
+        <Grid Grid.Row="1" x:Name="Center">
+            <StackPanel x:Name="Center_st"/>
+        </Grid>
+        <Grid Grid.Row="2" x:Name="Bottom">
+            <StackPanel x:Name="Bottom_st"/>
+        </Grid>
     </Grid>
 </Page>

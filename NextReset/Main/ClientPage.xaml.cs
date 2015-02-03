@@ -72,6 +72,17 @@ namespace Main
             InitFields();
             AddButton("Confirm", Confirm);
             AddButton("Create", Create);
+            InitAbout();
+        }
+        private void InitAbout()
+        {
+            _About_tx.Inlines.Clear();
+            Hyperlink link = new Hyperlink();
+            link.Inlines.Add("about");
+            link.Click += AboutPage;
+            _About_tx.Inlines.Add("The game is made by Roel Suntjens. To learn more ");
+            _About_tx.Inlines.Add(link);
+            _About_tx.Inlines.Add(" me, see my about page");
         }
         private void InitUsername_lb()
         {
@@ -271,17 +282,10 @@ namespace Main
             AddButton("Tutorial", TutorialPage);
             AddButton("Settings", SettingsPage);
             AddButton("Help", HelpPage);
-            AddButton("Exit", Exit);
             AddButton("Check for updates", CheckForUpdates);
-
-            Hyperlink link = new Hyperlink();
-            link.Inlines.Add("about");
-            link.Click += AboutPage;
-            _About_tx.Inlines.Add("The game is made by Roel Suntjens. To learn more ");
-            _About_tx.Inlines.Add(link);
-            _About_tx.Inlines.Add(" me, see my about page");
+            AddButton("Exit", Exit);
+            InitAbout();
         }
-
         private void AddButton(string text, Action<object, RoutedEventArgs> SelectionPage)
         {
             Button button = new Button();
