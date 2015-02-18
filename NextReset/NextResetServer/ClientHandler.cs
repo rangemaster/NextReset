@@ -36,10 +36,10 @@ namespace NextResetServer
                 NetworkPackage package = NetworkListener.RecievePackage(_client);
                 try
                 { Handlers[package.ExecuteCode].Handle(_server, _client, package); }
-                catch (NullReferenceException) { _page.AddOutput("Client [" + _name + "] Left"); _page.LogOff(_name); return false; }
+                catch (NullReferenceException) { if (!_page.LogOff(_name)) { _page.AddOutput("Client [" + _name + "] Left"); }; return false; }
                 catch (KeyNotFoundException) { _page.AddOutput("ExecuteCode [" + package.ExecuteCode + "] was not found"); return false; }
             }
-            catch (IOException) { _page.AddError("handle", NetworkSettings.Error.IOException); _page.LogOff(_name); return false; }
+            catch (IOException) { if (!_page.LogOff(_name)) { _page.AddError("handle", NetworkSettings.Error.IOException); }; return false; }
             return true;
         }
         private void Register()

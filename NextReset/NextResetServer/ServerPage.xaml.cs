@@ -29,10 +29,13 @@ namespace NextResetServer
     public partial class ServerPage : Page
     {
         private static List<string> _NewOutputLines = null;
+        private static List<string> _NewLogLines = null;
         private List<string> _OldOutputLines = null;
+        private List<string> _OldLogLines = null;
         private DispatcherTimer _OutputTimer = null;
         private NetworkListener server;
         private Thread ReceiveThread = null;
+        private bool LogSelected = false;
         public ServerPage()
         {
             InitializeComponent();
@@ -46,20 +49,26 @@ namespace NextResetServer
             server = new NetworkListener();
             _NewOutputLines = new List<string>();
             _OldOutputLines = new List<string>();
+            _NewLogLines = new List<string>();
+            _OldLogLines = new List<string>();
         }
         #region Output
         private void Output(string message)
         { _Output_tx.Text += message + "\n"; }
+        private void Log(string message)
+        { _Output_tx.Text += message + "\n"; }
         public void AddError(int code)
         { AddError("", code); }
         public void AddError(string location, int code)
-        { _NewOutputLines.Add(ServerData.Time() + " --- " + "Error [" + location + "][" + code + "]"); }
+        { _NewLogLines.Add(ServerData.Time() + " --- " + "Error [" + location + "][" + code + "]"); }
         public void AddOutput(string output)
         { _NewOutputLines.Add(ServerData.Time() + " --- " + output); }
         #endregion
         #region Peek
         private int OutputPeek
         { get { return _NewOutputLines.Count > 0 ? 1 : -1; } }
+        private int LogPeek
+        { get { return _NewLogLines.Count > 0 ? 1 : -1; } }
         private int RegistrationPeek
         { get { return ServerData.Get.GetRegistrations().Count > 0 ? 1 : -1; } }
         #endregion
@@ -77,6 +86,7 @@ namespace NextResetServer
         private void OutputTimer_Tick(object sender, EventArgs e)
         {
             OutputLineHandling();
+            LogLineHandling();
             RegistrationHandling();
             UpdateOnlineCounter();
         }
@@ -87,11 +97,27 @@ namespace NextResetServer
             ServerData.Get.GetOutputLines().Clear();
             while (OutputPeek >= 0)
             {
-                Debug.WriteLine("Peek");
                 string line = _NewOutputLines[0];
+                Debug.WriteLine("Activity Peek: " + line);
                 _NewOutputLines.RemoveAt(0);
-                Output(line);
                 _OldOutputLines.Add(line);
+                if (!LogSelected)
+                { Output(line); }
+            }
+        }
+        private void LogLineHandling()
+        {
+            for (int i = 0; i < ServerData.Get.GetLogLines().Count; i++)
+            { _NewLogLines.Add(ServerData.Get.GetLogLines()[i]); }
+            ServerData.Get.GetLogLines().Clear();
+            while (LogPeek >= 0)
+            {
+                string line = _NewLogLines[0];
+                Debug.WriteLine("Log peek: " + line);
+                _NewLogLines.RemoveAt(0);
+                _OldLogLines.Add(line);
+                if (LogSelected)
+                { Output(line); }
             }
         }
         private void RegistrationHandling()
@@ -204,6 +230,7 @@ namespace NextResetServer
             catch (IOException) { return false; }
             catch (ArgumentNullException) { return false; }
             catch (NullReferenceException) { return false; }
+            AddOutput(name + " --> Goes offline");
             return true;
         }
         public void UpdateOnlineCounter()
@@ -221,5 +248,19 @@ namespace NextResetServer
         #endregion
         public static void AddNewOutputLine(string line)
         { _NewOutputLines.Add(line); }
+        private void Log_bn_Click(object sender, RoutedEventArgs e)
+        {
+            LogSelected = true;
+            this._Output_tx.Text = "";
+            foreach (string line in _OldLogLines)
+            { Output(line); }
+        }
+        private void Activity_bn_Click(object sender, RoutedEventArgs e)
+        {
+            LogSelected = false;
+            this._Output_tx.Text = "";
+            foreach (string line in _OldOutputLines)
+            { Output(line); }
+        }
     }
 }

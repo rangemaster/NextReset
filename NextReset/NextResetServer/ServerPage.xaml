@@ -40,9 +40,11 @@
                     <RowDefinition Height="100*"/>
                     <RowDefinition Height="300"/>
                 </Grid.RowDefinitions>
-                <Grid Grid.Row="0">
-
-                </Grid>
+                <Grid Grid.Row="0"/>
+                <StackPanel>
+                    <Button x:Name="Activity_bn" Content="Activity" Click="Activity_bn_Click"/>
+                    <Button x:Name="Log_bn" Content="Log" Click="Log_bn_Click"/>
+                </StackPanel>
                 <Grid Grid.Row="1">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" VerticalAlignment="Top" Background="Gray">
                         <TextBlock x:Name="_Output_tx" Text="Server Output"/>

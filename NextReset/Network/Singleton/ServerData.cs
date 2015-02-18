@@ -19,6 +19,7 @@ namespace Settings.Singleton
         private string white_list = "WhiteData.reset";
         private string forbidden_list = "Forbidden.reset";
         private List<string> _OutputLines;
+        private List<string> _LogLines;
         public bool IsUpdatable { get; set; }
         private Dictionary<string, string> _Accounts { get; set; }
         private Dictionary<string, string> _Registrations { get; set; }
@@ -30,6 +31,7 @@ namespace Settings.Singleton
             _Registrations = new Dictionary<string, string>();
             _Accounts = new Dictionary<string, string>();
             _OutputLines = new List<string>();
+            _LogLines = new List<string>();
             _WhiteList = new List<string>();
             _BlackList = new List<string>();
             _ForbiddenList = new List<string>();
@@ -84,11 +86,11 @@ namespace Settings.Singleton
         {
             using (StreamWriter writer = new StreamWriter(location + "/" + account_list))
             {
-                AddOutputLine("--- Save Accounts ---");
+                AddLogLine("--- Save Accounts ---");
                 foreach (string username in _Accounts.Keys)
                 {
                     writer.WriteLine(username + " - " + _Accounts[username]);
-                    AddOutputLine(" * " + username + "[" + ToPasswordConverter(_Accounts[username] + "]"));
+                    AddLogLine(" * " + username + "[" + ToPasswordConverter(_Accounts[username] + "]"));
                 }
                 Debug.WriteLine("Account list saved (" + _Accounts.Count + ")");
             }
@@ -110,11 +112,11 @@ namespace Settings.Singleton
         {
             using (StreamWriter writer = new StreamWriter(location + "/" + white_list))
             {
-                AddOutputLine("--- Save White List ---");
+                AddLogLine("--- Save White List ---");
                 foreach (string username in _WhiteList)
                 {
                     writer.WriteLine(username);
-                    AddOutputLine(" * " + username);
+                    AddLogLine(" * " + username);
                 }
                 Debug.WriteLine("White list saved (" + _WhiteList.Count + ")");
             }
@@ -125,11 +127,11 @@ namespace Settings.Singleton
         {
             using (StreamWriter writer = new StreamWriter(location + "/" + black_list))
             {
-                AddOutputLine("--- Save Black List ---");
+                AddLogLine("--- Save Black List ---");
                 foreach (string username in _BlackList)
                 {
                     writer.WriteLine(username);
-                    AddOutputLine(" * " + username);
+                    AddLogLine(" * " + username);
                 }
                 Debug.WriteLine("Black list saved (" + _BlackList.Count + ")");
             }
@@ -140,11 +142,11 @@ namespace Settings.Singleton
         {
             using (StreamWriter writer = new StreamWriter(location + "/" + forbidden_list))
             {
-                AddOutputLine("--- Save Forbidden List ---");
+                AddLogLine("--- Save Forbidden List ---");
                 foreach (string word in _ForbiddenList)
                 {
                     writer.WriteLine(word);
-                    AddOutputLine(" * " + word);
+                    AddLogLine(" * " + word);
                 }
                 Debug.WriteLine("Forbidden list saved (" + _ForbiddenList.Count + ")");
             }
@@ -189,33 +191,33 @@ namespace Settings.Singleton
         private void CreateSubDictionary()
         {
             Directory.CreateDirectory(AppSettings.SaveOrLoad._Level_Source_Location);
-            AddOutputLine("Directory [" + AppSettings.SaveOrLoad._Level_Source_Location + "] has been created");
+            AddLogLine("Directory [" + AppSettings.SaveOrLoad._Level_Source_Location + "] has been created");
         }
         private void CreateDictionary()
         {
             Directory.CreateDirectory(location);
-            AddOutputLine("Directory [" + location + "] has been created");
+            AddLogLine("Directory [" + location + "] has been created");
         }
         private void CreateAccountList()
         {
             using (StreamWriter writer = new StreamWriter(location + "/" + account_list))
             { writer.WriteLine("admin - admin"); }
-            AddOutputLine("File [" + location + "/" + account_list + "] has been created");
+            AddLogLine("File [" + location + "/" + account_list + "] has been created");
         }
         private void CreateBlackList()
         {
             using (StreamWriter writer = new StreamWriter(location + "/" + black_list)) { writer.WriteLine(""); }
-            AddOutputLine("Whitelist [" + location + "/" + black_list + "] has been created");
+            AddLogLine("Whitelist [" + location + "/" + black_list + "] has been created");
         }
         private void CreateWhiteList()
         {
             using (StreamWriter writer = new StreamWriter(location + "/" + white_list)) { writer.WriteLine("admin"); }
-            AddOutputLine("Blacklist [" + location + "/" + white_list + "] has been created");
+            AddLogLine("Blacklist [" + location + "/" + white_list + "] has been created");
         }
         private void CreateForbiddenList()
         {
             using (StreamWriter writer = new StreamWriter(location + "/" + forbidden_list)) { writer.WriteLine(""); }
-            AddOutputLine("Forbiddenlist [" + location + "/" + forbidden_list + "] has been created");
+            AddLogLine("Forbiddenlist [" + location + "/" + forbidden_list + "] has been created");
         }
         public bool CreateRegistration(string username, string password)
         {
@@ -226,7 +228,9 @@ namespace Settings.Singleton
             try
             { _Registrations.Add(username, password); }
             catch (ArgumentException) { return false; }
-            AddOutputLine("Registration [" + username + "] [" + password + "] was Added");
+            string line = "Registration [" + username + "] [" + password + "] was Added";
+            AddOutputLine(line);
+            AddLogLine(line);
             return true;
         }
         #endregion
@@ -240,7 +244,7 @@ namespace Settings.Singleton
             {
                 using (StreamReader reader = new StreamReader(location + "/" + account_list))
                 {
-                    AddOutputLine("--- Load Accounts ---");
+                    AddLogLine("--- Load Accounts ---");
                     while (reader.Peek() >= 0)
                     {
                         try
@@ -248,9 +252,9 @@ namespace Settings.Singleton
                             string line = reader.ReadLine();
                             string[] array = line.Split('-');
                             _Accounts.Add(array[0].Trim(), array[1].Trim());
-                            AddOutputLine(" * " + array[0].Trim());
+                            AddLogLine(" * " + array[0].Trim());
                         }
-                        catch (FormatException) { AddOutputLine("Account loading Exception row(" + row + ")"); }
+                        catch (FormatException) { AddLogLine("Account loading Exception row(" + row + ")"); }
                         row++;
                     }
                 }
@@ -267,12 +271,12 @@ namespace Settings.Singleton
             {
                 using (StreamReader reader = new StreamReader(location + "/" + white_list))
                 {
-                    AddOutputLine("--- Load White List ---");
+                    AddLogLine("--- Load White List ---");
                     while (reader.Peek() >= 0)
                     {
                         string line = reader.ReadLine();
                         _WhiteList.Add(line.Trim());
-                        AddOutputLine(" * " + line.Trim());
+                        AddLogLine(" * " + line.Trim());
                     }
                 }
             }
@@ -288,12 +292,12 @@ namespace Settings.Singleton
             {
                 using (StreamReader reader = new StreamReader(location + "/" + black_list))
                 {
-                    AddOutputLine("--- Load Black List ---");
+                    AddLogLine("--- Load Black List ---");
                     while (reader.Peek() >= 0)
                     {
                         string line = reader.ReadLine();
                         _BlackList.Add(line.Trim());
-                        AddOutputLine(" * " + line.Trim());
+                        AddLogLine(" * " + line.Trim());
                     }
                 }
             }
@@ -309,12 +313,12 @@ namespace Settings.Singleton
             {
                 using (StreamReader reader = new StreamReader(location + "/" + forbidden_list))
                 {
-                    AddOutputLine("--- Load Forbidden List ---");
+                    AddLogLine("--- Load Forbidden List ---");
                     while (reader.Peek() >= 0)
                     {
                         string line = reader.ReadLine();
                         _ForbiddenList.Add(line.Trim());
-                        AddOutputLine(" * " + line.Trim());
+                        AddLogLine(" * " + line.Trim());
                     }
                 }
             }
@@ -326,12 +330,14 @@ namespace Settings.Singleton
         #region Add
         public void AddOutputLine(string line)
         { _OutputLines.Add(Time() + " " + line); }
+        public void AddLogLine(string line)
+        { _LogLines.Add(Time() + " " + line); }
         public void AddAccount(string username, string password)
         {
             if (!_Accounts.ContainsKey(username))
             {
                 _Accounts.Add(username, password);
-                AddOutputLine("[" + username + "] [" + password + "] was added to the accounts");
+                AddLogLine("[" + username + "] [" + password + "] was added to the accounts");
             }
             else { Debug.WriteLine("_Accouts does allready contain [" + username + "]"); }
         }
@@ -339,6 +345,8 @@ namespace Settings.Singleton
         #region Get
         public List<string> GetOutputLines()
         { return _OutputLines; }
+        public List<string> GetLogLines()
+        { return _LogLines; }
         public Dictionary<string, string> GetAccounts()
         { return _Accounts; }
         public Dictionary<string, string> GetRegistrations()
@@ -353,7 +361,6 @@ namespace Settings.Singleton
             { if (_Accounts[username].Equals(password)) { succes = 1; } }
             succes += OnBlackList(username);
             succes += OnWhiteList(username);
-            _OutputLines.Add("Login try: " + username + " - " + password + " = " + succes);
             return succes;
         }
         private int OnBlackList(string username)
@@ -378,9 +385,9 @@ namespace Settings.Singleton
                 Debug.WriteLine("Forbidden word: " + forbiddenWord);
                 if (!forbidden_list.Equals("") && !word.Equals(""))
                     if (word.Contains(forbiddenWord))
-                    { Debug.WriteLine("!!Forbidden!!"); AddOutputLine("Busted!! --- [" + forbiddenWord + "[" + word + "]] forbidden"); return 1; }
+                    { Debug.WriteLine("!!Forbidden!!"); AddLogLine("Busted!! --- [" + forbiddenWord + "[" + word + "]] forbidden"); return 1; }
             }
-            return -1;
+            return -10;
         }
         #endregion
         public static string Time()

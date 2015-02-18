@@ -23,6 +23,9 @@ namespace Settings.Network.Handlers.Server
                 string username = package.Data[0].Item1[0];
                 string password = package.Data[0].Item1[1];
                 Value = ServerData.Get.ContainsAccount(username, password);
+                if (Value > 0)
+                { ServerData.Get.AddOutputLine(username + " logged in."); }
+                ServerData.Get.AddLogLine("Login attemt: " + username + " [" + password + "][" + Value + "]");
             }
             NetworkPackage ReturnPackage = new NetworkPackage((int)NetworkSettings.ExecuteCode.login_response);
             ReturnPackage.Value = Value;

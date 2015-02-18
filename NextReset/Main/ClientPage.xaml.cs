@@ -242,7 +242,7 @@ namespace Main
         private void LoginFailed()
         {
             (_Button_Stackpanel.Children[4 + _StartOffset] as TextBlock).Text = AppSettings.Login._LoginFailed;
-            ServerData.Get.AddOutputLine(AppSettings.Login._LoginFailed);
+            ServerData.Get.AddLogLine(AppSettings.Login._LoginFailed);
             FeedbackTimer();
         }
         #region Timer
